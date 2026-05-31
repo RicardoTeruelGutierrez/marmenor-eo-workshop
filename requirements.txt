@@ -1,0 +1,32 @@
+# Mar Menor EO Workshop — Python dependencies
+# Install with:  pip install -r requirements.txt
+#
+# Core data stack (required for both modules)
+numpy
+pandas
+pyarrow            # required to read/write the .parquet datasets
+xarray
+netCDF4            # required to read sentinel3_sst_cube.nc
+matplotlib
+scipy
+scikit-learn
+
+# Geospatial / raster (Module 1, real Sentinel-2 GeoTIFFs)
+rasterio
+rioxarray
+
+# Catalogue access + basemaps (Section B / optional real-data workflow)
+requests
+pystac-client
+contextily
+
+# Oceanographic colormaps (nicer chlorophyll / SST figures)
+cmocean
+
+# Notebook execution
+jupyter
+
+# ── Module 3 (database) ──────────────────────────────────────────────────
+# sqlite3 ships with Python (no install needed).
+# DuckDB is OPTIONAL — only for the "pro" exercise that queries Parquet directly.
+# duckdb

@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mar Menor EO Workshop — Introduction</title>
+<style>
+  :root {
+    --ink:        #0e1a26;
+    --paper:      #f6f1e7;
+    --paper-2:    #eee5d4;
+    --accent:     #c2410c;
+    --accent-2:   #115e59;
+    --grey:       #6b6157;
+    --rule:       #1e2e3a;
+    --serif:      "Iowan Old Style", "Source Serif Pro", "Apple Garamond",
+                  "Baskerville", "Times New Roman", serif;
+    --mono:       "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--ink); }
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .deck {
+    width: min(95vw, 1280px);
+    aspect-ratio: 16 / 9;
+    background: var(--paper);
+    box-shadow: 0 30px 90px rgba(0,0,0,.5);
+    position: relative;
+    overflow: hidden;
+  }
+  .slide {
+    position: absolute; inset: 0;
+    padding: 4.5rem 5.5rem;
+    display: none;
+    flex-direction: column;
+    background-image:
+      radial-gradient(rgba(0,0,0,.03) 1px, transparent 1px);
+    background-size: 4px 4px;
+  }
+  .slide.active { display: flex; }
+  .label {
+    font-family: var(--mono);
+    font-size: .72rem;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+  h1 {
+    font-size: 4.4rem; font-weight: 500;
+    line-height: 1; letter-spacing: -.025em;
+    margin: 0 0 1rem; font-style: italic;
+  }
+  h2 {
+    font-size: 2.6rem; font-weight: 500;
+    line-height: 1.1; letter-spacing: -.02em;
+    margin: 0 0 1.5rem;
+  }
+  h3 {
+    font-size: 1.25rem; font-weight: 600;
+    margin: 0 0 .5rem;
+  }
+  p, li { font-size: 1.15rem; line-height: 1.55; color: #2a2520; }
+  .lede {
+    font-size: 1.45rem; line-height: 1.4;
+    color: #3a2e22; max-width: 60ch;
+  }
+  hr.rule {
+    border: 0; height: 1px; background: var(--rule);
+    margin: .5rem 0 2rem; width: 100%;
+  }
+  .footer {
+    position: absolute; bottom: 1.4rem; left: 5.5rem; right: 5.5rem;
+    display: flex; justify-content: space-between;
+    font-family: var(--mono); font-size: .7rem;
+    letter-spacing: .15em; text-transform: uppercase;
+    color: var(--grey); border-top: 1px solid #d6cdba; padding-top: .8rem;
+  }
+  .nav {
+    position: fixed; bottom: 1.5rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: .35rem;
+    background: rgba(255,255,255,.08); padding: .35rem .6rem;
+    border-radius: 999px; backdrop-filter: blur(8px);
+  }
+  .nav button {
+    background: none; border: 0; color: var(--paper-2);
+    font-family: var(--mono); font-size: .8rem; cursor: pointer;
+    padding: .25rem .55rem; border-radius: 99px;
+  }
+  .nav button:hover { background: rgba(255,255,255,.12); }
+  .counter {
+    color: var(--paper-2); font-family: var(--mono); font-size: .75rem;
+    padding: .25rem .55rem;
+  }
+  /* Slide-specific helpers */
+  .two-col { display: grid; grid-template-columns: 1.1fr .9fr; gap: 3rem; flex: 1; align-items: start; }
+  .quad { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; flex: 1; }
+  .quad .card {
+    border-left: 3px solid var(--accent-2);
+    padding: .9rem 1.1rem; background: rgba(255,255,255,.45);
+  }
+  .quad .card h3 { color: var(--accent-2); font-size: 1.05rem; font-family: var(--mono);
+    text-transform: uppercase; letter-spacing: .12em; }
+  .quad .card p { font-size: .95rem; margin: 0; }
+  .timeline { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 1.4rem; padding: 1rem 0; }
+  .ev { display: grid; grid-template-columns: 130px 1fr; gap: 1.5rem; align-items: baseline; }
+  .ev .y { font-family: var(--mono); font-size: 1.5rem; color: var(--accent); font-weight: 600; }
+  .ev .t { font-size: 1.1rem; }
+  .stat-row { display: flex; gap: 3rem; margin-top: auto; padding-top: 2rem; }
+  .stat { display: flex; flex-direction: column; }
+  .stat .n { font-size: 3rem; font-weight: 500; line-height: 1; color: var(--accent); font-style: italic; }
+  .stat .k { font-family: var(--mono); font-size: .75rem; letter-spacing: .15em;
+    text-transform: uppercase; color: var(--grey); margin-top: .5rem; }
+  pre.code {
+    font-family: var(--mono); font-size: .85rem;
+    background: var(--ink); color: #d4cdb9;
+    padding: 1.5rem; border-radius: 4px; white-space: pre;
+    line-height: 1.5; overflow: hidden;
+  }
+  pre.code .c { color: #7f7361; font-style: italic; }
+  pre.code .k { color: #e9a44b; }
+  pre.code .s { color: #b8c66e; }
+  ul.tight { padding-left: 1.2rem; }
+  ul.tight li { margin-bottom: .4rem; }
+  .agenda-row { display: grid; grid-template-columns: 110px 1fr 200px; align-items: baseline; gap: 1.5rem; padding: 1rem 0; border-bottom: 1px dashed #d6cdba; }
+  .agenda-row .time { font-family: var(--mono); font-size: .9rem; color: var(--accent); }
+  .agenda-row .topic { font-size: 1.15rem; }
+  .agenda-row .deliv { font-family: var(--mono); font-size: .75rem; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--grey); text-align: right; }
+  .signature {
+    font-family: var(--mono); font-size: .85rem;
+    letter-spacing: .2em; text-transform: uppercase;
+    color: var(--grey);
+  }
+  /* Cover */
+  .cover {
+    background: linear-gradient(160deg, var(--paper) 0%, var(--paper-2) 100%);
+  }
+  .cover h1 { font-size: 5.5rem; max-width: 14ch; }
+  .cover .mono-label { font-family: var(--mono); font-size: .85rem;
+    letter-spacing: .25em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 2.5rem; }
+  /* The lagoon SVG silhouette as decoration */
+  .lagoon-deco {
+    position: absolute; right: -180px; bottom: -120px;
+    width: 720px; opacity: .07; pointer-events: none;
+  }
+  .num { font-family: var(--mono); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+<!-- Slide 1: Cover ------------------------------------------------------ -->
+<section class="slide active cover">
+  <div class="mono-label">ESA Earth Observation Workshop · NYU PhD Programme</div>
+  <h1>The Mar Menor.<br>A laboratory of collapse,<br>read from space.</h1>
+  <hr class="rule" style="background: var(--accent); width: 200px; margin-top: 2rem;">
+  <p class="lede">Extracting and analyzing Copernicus Sentinel data,
+    in-situ buoy records and watershed forcing for Europe's most-watched
+    hypersaline coastal lagoon.</p>
+  <div class="stat-row">
+    <div class="stat"><span class="n">135</span><span class="k">km² lagoon area</span></div>
+    <div class="stat"><span class="n">7 m</span><span class="k">max depth</span></div>
+    <div class="stat"><span class="n">~10⁹</span><span class="k">EO pixels analyzed</span></div>
+    <div class="stat"><span class="n">4</span><span class="k">documented crises</span></div>
+  </div>
+  <svg class="lagoon-deco" viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M100,15 C140,15 175,55 175,120 C175,175 145,235 100,235 C55,235 25,180 25,120 C25,55 60,15 100,15 Z M105,40 C75,40 50,65 45,110 C42,140 55,170 80,195 C95,210 110,205 125,195 C155,175 165,135 160,100 C155,65 135,40 105,40 Z"/>
+  </svg>
+  <div class="footer"><span>marmenor / 00</span><span>workshop · introduction · 20 min</span></div>
+</section>
+
+<!-- Slide 2: Why this lagoon -------------------------------------------- -->
+<section class="slide">
+  <div class="label">§ 01 — Why this lagoon</div>
+  <h2>A small body of water that has<br>broken three times in a decade.</h2>
+  <hr class="rule">
+  <div class="two-col">
+    <div>
+      <p class="lede">The Mar Menor is the largest hypersaline coastal lagoon
+        in Europe and one of the most heavily monitored. Decades of nitrate
+        loading from intensive agriculture in the Campo de Cartagena meet
+        sporadic DANA flood events, episodic mining-sediment inputs, and
+        rising Mediterranean SST. The lagoon collapses, recovers and
+        collapses again — and every collapse is visible from orbit at
+        10-metre resolution.</p>
+    </div>
+    <div>
+      <h3>What it offers as a teaching case</h3>
+      <ul class="tight">
+        <li>Long Sentinel-2 archive (2015–present) at the right resolution</li>
+        <li>Daily Sentinel-3 SLSTR SST since 2017</li>
+        <li>A public, daily in-situ network (CARM / IMIDA)</li>
+        <li>Watershed hydrology from CHS-SAIH</li>
+        <li>Optically <em>Case-2</em> waters — forces honest engagement
+          with atmospheric correction</li>
+        <li>Strong, dated ground-truth events for skill assessment</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><span>marmenor / 01</span><span>context</span></div>
+</section>
+
+<!-- Slide 3: Timeline --------------------------------------------------- -->
+<section class="slide">
+  <div class="label">§ 02 — The crises, dated</div>
+  <h2>What we will recover from the data.</h2>
+  <hr class="rule">
+  <div class="timeline">
+    <div class="ev"><span class="y">2016</span><span class="t"><strong>First eutrophication crisis.</strong>
+      "Sopa verde" event. Chlorophyll-a reaches 5–6 mg/m³ across the lagoon;
+      Secchi transparency collapses from 5 m to <1 m.</span></div>
+    <div class="ev"><span class="y">2019</span><span class="t"><strong>DANA flood pulse, September.</strong>
+      300+ mm in 48 h over the Campo de Cartagena.
+      Salinity drops 4 PSU, nitrate spikes ten-fold, three tonnes of dead fish on the shoreline.</span></div>
+    <div class="ev"><span class="y">2021</span><span class="t"><strong>August anoxia and mass fish-kill.</strong>
+      Dissolved oxygen at the surface crashes below 2 mg/L;
+      stratification + marine heatwave + chronic nutrient load.</span></div>
+    <div class="ev"><span class="y">2025</span><span class="t"><strong>Bloom resurgence.</strong>
+      Chl-a anomalies return; regional governance debate intensifies.
+      A renewed test for early-warning systems.</span></div>
+  </div>
+  <div class="footer"><span>marmenor / 02</span><span>timeline</span></div>
+</section>
+
+<!-- Slide 4: Four data sources ------------------------------------------ -->
+<section class="slide">
+  <div class="label">§ 03 — The four data streams</div>
+  <h2>What we extract, and from where.</h2>
+  <hr class="rule">
+  <div class="quad">
+    <div class="card">
+      <h3>Sentinel-2 MSI / L2A</h3>
+      <p>10 m, 5-day revisit. Chl-a + turbidity in Case-2 waters via
+      <strong>C2RCC</strong> atmospheric correction + empirical band ratios.
+      Source: Copernicus Data Space Ecosystem.</p>
+    </div>
+    <div class="card">
+      <h3>Sentinel-3 SLSTR / OLCI</h3>
+      <p>1 km daily SST (<code>SL_2_WST</code>), 300 m OLCI for ocean colour.
+      For lagoon-mean trends and marine-heatwave detection.</p>
+    </div>
+    <div class="card">
+      <h3>In-situ buoys</h3>
+      <p>Daily T, S, chl-a, turbidity, DO, nitrate from the
+      <strong>CARM / IMIDA</strong> monitoring network.
+      Used for validation and match-up statistics.</p>
+    </div>
+    <div class="card">
+      <h3>Watershed forcing</h3>
+      <p>Precipitation + nitrate-flux proxy from <strong>CHS-SAIH</strong>
+      (Segura). Connects the lagoon's optical signal back to the
+      agricultural pressure that drives it.</p>
+    </div>
+  </div>
+  <div class="footer"><span>marmenor / 03</span><span>data streams</span></div>
+</section>
+
+<!-- Slide 5: Stack ----------------------------------------------------- -->
+<section class="slide">
+  <div class="label">§ 04 — The Python stack</div>
+  <h2>Modern, narrow, reproducible.</h2>
+  <hr class="rule">
+  <div class="two-col">
+    <pre class="code"><span class="c"># Access</span>
+<span class="k">import</span> requests
+<span class="k">from</span> pystac_client <span class="k">import</span> Client
+<span class="k">import</span> openeo
+
+<span class="c"># Raster + cube</span>
+<span class="k">import</span> xarray <span class="k">as</span> xr
+<span class="k">import</span> rioxarray
+<span class="k">import</span> rasterio
+
+<span class="c"># Tabular + vector</span>
+<span class="k">import</span> pandas <span class="k">as</span> pd
+<span class="k">import</span> geopandas <span class="k">as</span> gpd
+
+<span class="c"># Learning</span>
+<span class="k">from</span> sklearn.ensemble <span class="k">import</span> (
+    GradientBoostingRegressor,
+    IsolationForest,
+)
+<span class="k">from</span> sklearn.model_selection <span class="k">import</span> (
+    TimeSeriesSplit,
+)</pre>
+    <div>
+      <h3>Design principles</h3>
+      <ul class="tight">
+        <li><strong>Lazy I/O.</strong> Use <code>xarray</code> + <code>dask</code>
+          to defer computation until needed.</li>
+        <li><strong>STAC over GUI.</strong> Discoverable, scriptable, reproducible.</li>
+        <li><strong>Statistical API over scene download.</strong>
+          Don't move pixels you can summarize server-side.</li>
+        <li><strong>Time-aware CV.</strong> Never random k-fold on EO data;
+          always <code>TimeSeriesSplit</code> or block holdout.</li>
+        <li><strong>Honest baselines.</strong> Start with a band ratio
+          before invoking a neural net.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><span>marmenor / 04</span><span>stack</span></div>
+</section>
+
+<!-- Slide 6: Agenda ---------------------------------------------------- -->
+<section class="slide">
+  <div class="label">§ 05 — How the next 2.5 hours run</div>
+  <h2>Two notebooks, one lagoon.</h2>
+  <hr class="rule">
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+    <div class="agenda-row">
+      <span class="time">00:00</span>
+      <span class="topic"><strong>Introduction (these slides).</strong> Context, crises, data sources, stack.</span>
+      <span class="deliv">slides · 20 min</span>
+    </div>
+    <div class="agenda-row">
+      <span class="time">00:20</span>
+      <span class="topic"><strong>Module 1 — Satellite data extraction.</strong>
+        CDSE authentication, STAC search, Sentinel-2 chl-a / turbidity, Sentinel-3 SST cube.</span>
+      <span class="deliv">notebook 01 · 75 min</span>
+    </div>
+    <div class="agenda-row">
+      <span class="time">01:35</span>
+      <span class="topic"><strong>Break.</strong></span>
+      <span class="deliv">15 min</span>
+    </div>
+    <div class="agenda-row">
+      <span class="time">01:50</span>
+      <span class="topic"><strong>Module 2 — In-situ + ML.</strong>
+        Buoy ingestion, satellite/in-situ match-ups, gradient boosting retrieval, multivariate anomaly detection.</span>
+      <span class="deliv">notebook 02 · 70 min</span>
+    </div>
+  </div>
+  <div class="footer"><span>marmenor / 05</span><span>agenda</span></div>
+</section>
+
+<!-- Slide 7: Framing ---------------------------------------------------- -->
+<section class="slide">
+  <div class="label">§ 06 — A framing question for the day</div>
+  <h2 style="font-style: italic; max-width: 22ch;">"Earth observation can shorten the loop
+    from signal to decision. The slow variable is the politics."</h2>
+  <hr class="rule">
+  <p class="lede">Every algorithm in this workshop already exists in someone's
+    production pipeline somewhere in Murcia. The lagoon still degrades.
+    Hold that tension in mind as we work — what is the role of the
+    scientist when the bottleneck is downstream of the inference?</p>
+  <div style="margin-top:auto;">
+    <span class="signature">— Workshop opens · Module 1 → notebooks/01_satellite_data_extraction.ipynb</span>
+  </div>
+  <div class="footer"><span>marmenor / 06</span><span>fin · introduction</span></div>
+</section>
+
+</div>
+
+<div class="nav">
+  <button id="prev">← prev</button>
+  <span class="counter" id="counter">1 / 7</span>
+  <button id="next">next →</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll(".slide");
+  let idx = 0;
+  const show = i => {
+    slides.forEach((s, k) => s.classList.toggle("active", k === i));
+    document.getElementById("counter").textContent = `${i+1} / ${slides.length}`;
+  };
+  document.getElementById("next").onclick = () => { idx = (idx+1) % slides.length; show(idx); };
+  document.getElementById("prev").onclick = () => { idx = (idx-1+slides.length) % slides.length; show(idx); };
+  document.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight" || e.key === " ") { idx = (idx+1) % slides.length; show(idx); }
+    if (e.key === "ArrowLeft")                   { idx = (idx-1+slides.length) % slides.length; show(idx); }
+  });
+</script>
+</body>
+</html>
