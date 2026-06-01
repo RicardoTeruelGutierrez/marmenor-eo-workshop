@@ -43,6 +43,8 @@ slides/_preview/
 # ── Instructor-only material (private, not for attendees) ──────────────
 Instructor_Study_Guide.docx
 Guia_de_Estudio_Instructor.docx
+scripts/build_study_guide.py
+scripts/build_study_guide_es.py
 
 # Notebook HTML exports — commented in: useful for attendees who can't run Python.
 # Uncomment the lines below if you prefer to keep them out of the repo.
