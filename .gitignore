@@ -40,6 +40,10 @@ database/
 # Temporary slide preview folder (PowerPoint COM exports)
 slides/_preview/
 
+# ── Instructor-only material (private, not for attendees) ──────────────
+Instructor_Study_Guide.docx
+Guia_de_Estudio_Instructor.docx
+
 # Notebook HTML exports — commented in: useful for attendees who can't run Python.
 # Uncomment the lines below if you prefer to keep them out of the repo.
 # notebooks/*.html
