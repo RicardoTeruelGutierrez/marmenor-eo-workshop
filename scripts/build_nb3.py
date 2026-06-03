@@ -393,50 +393,38 @@ else:
 ''')
 
 # --- 1.5 Account-based heavyweights ----------------------------------------
-nb.md(r"""## 1.5 Level up: get a *free* Copernicus account — and what it unlocks
+nb.md(r"""## 1.5 Level up: get a *free* Copernicus account — do it now, live
 
-The open sources are perfect for prototyping. But a **free Copernicus Data Space
-Ecosystem (CDSE) account** unlocks something the AWS mirror cannot give you:
-**server-side, on-demand processing**. Instead of downloading raw bands and
-computing indices yourself, you send a small script and CDSE returns *exactly the
-product you asked for* — for any date, any area — and even full **time series
+The open sources are great for prototyping. A **free Copernicus Data Space
+Ecosystem (CDSE) account** unlocks what the AWS mirror cannot: **server-side,
+on-demand processing**. You send a small script and CDSE returns *exactly the
+product you ask for* — for any date, any area — and even full **time series
 without downloading a single image**.
 
-### Step 1 — Register (about 2 minutes, no credit card)
+**Let's set it up together in class — about 3 minutes:**
 
-1. Go to **<https://dataspace.copernicus.eu>** and click **“Register”** (top right).
-2. Enter your email + a password, accept the terms, and **confirm the verification
-   email**. That’s it — you can already log in and browse imagery in the
-   **Copernicus Browser**.
-3. Free quota: **~30,000 processing units / month** — plenty for a PhD project.
+### ① Register  →  <https://dataspace.copernicus.eu>
+Click **“Register”** (top right), enter your email + password, accept the terms,
+confirm the verification email. Done — free, no credit card, ~30,000 processing
+units/month.
 
-### Step 2 — Create programmatic credentials (OAuth client)
-
-To call the APIs from Python you need an **OAuth client** (a machine login):
-
+### ② Create an OAuth client (your "API key")
 1. Log in and open the **Sentinel Hub dashboard**: <https://shapps.dataspace.copernicus.eu/dashboard/>
-2. Go to **User settings → OAuth clients → “Create new”**.
-3. Copy the **client id** and **client secret** it shows you (the secret is shown
-   only once).
-4. Keep them out of your code — put them in **environment variables**:
+2. **User settings → OAuth clients → “Create new”**.
+3. It shows you a **Client ID** and a **Client secret**. ⚠️ The secret is shown
+   **only once** — copy it now.
 
-```bash
-# macOS / Linux
-export CDSE_CLIENT_ID="your-client-id"
-export CDSE_CLIENT_SECRET="your-client-secret"
-# Windows PowerShell
-$env:CDSE_CLIENT_ID="your-client-id"
-$env:CDSE_CLIENT_SECRET="your-client-secret"
-```
+### ③ Paste them into the next cell when you run it
+Run the cell below. It will prompt you to **paste your Client ID and Client
+secret** (the secret box is hidden as you type/paste). It then logs in and gets
+an access token — and every CDSE cell after it runs live, on your own account.
 
-### Step 3 — Authenticate
-
-The cell below reads those variables and requests an access token. **If you have
-set your credentials it runs live**; if not, it just prints what to do — nothing
-breaks. (Token = a short-lived pass, valid ~10 minutes.)
+> 🔒 Your secret is read into memory only, never written into the notebook. If
+> you skip this (just press Enter), the rest of the section still shows the code
+> patterns without running.
 """)
 
-nb.code(r'''import os
+nb.code(r'''import os, getpass
 
 def cdse_token(client_id, client_secret):
     """Exchange OAuth client credentials for a CDSE access token."""
@@ -449,21 +437,30 @@ def cdse_token(client_id, client_secret):
     r.raise_for_status()
     return r.json()["access_token"]
 
+# Credentials come from (1) environment variables if set, else (2) a live prompt.
 CID  = os.environ.get("CDSE_CLIENT_ID")
 CSEC = os.environ.get("CDSE_CLIENT_SECRET")
+if not (CID and CSEC):
+    try:
+        print("Paste your CDSE OAuth credentials (or just press Enter to skip):")
+        CID  = input("  Client ID:     ").strip()
+        CSEC = getpass.getpass("  Client secret: ").strip()   # hidden input
+    except Exception:
+        # Non-interactive execution (e.g. building the HTML) - skip the prompt.
+        CID = CSEC = ""
+
 TOKEN = None
 if CID and CSEC:
     try:
         TOKEN = cdse_token(CID, CSEC)
-        print("Authenticated with CDSE - token acquired (valid ~10 min).")
+        print("\nAuthenticated with CDSE - token acquired (valid ~10 min).")
         print("The cells below will now run LIVE against your account.")
     except Exception as e:
         print("Authentication failed:", e)
 else:
-    print("No CDSE credentials found in the environment.")
-    print("Register (Step 1), create an OAuth client (Step 2), then set:")
-    print("  CDSE_CLIENT_ID  and  CDSE_CLIENT_SECRET")
-    print("and re-run. Until then, the cells below show the patterns without running.")
+    print("No credentials entered - skipping live CDSE calls.")
+    print("Register at dataspace.copernicus.eu, create an OAuth client, then")
+    print("re-run this cell and paste them. The cells below show the patterns meanwhile.")
 ''')
 
 nb.md(r"""### What you unlock #1 — on-demand products with the **Process API**
