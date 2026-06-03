@@ -7,6 +7,42 @@
 
 ---
 
+## Quickstart
+
+### 🟢 Run in your browser (no install, ~30 s)
+
+Click any badge to open a notebook in **Google Colab** and run it cell by cell. The first cell auto-installs everything.
+
+| Module | Open in Colab | What you do |
+|--------|---------------|-------------|
+| **1** — Satellite data | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RicardoTeruelGutierrez/marmenor-eo-workshop/blob/main/notebooks/01_satellite_data_extraction.ipynb) | Sentinel-2 chlorophyll + Sentinel-3 SST |
+| **2** — In-situ + ML | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RicardoTeruelGutierrez/marmenor-eo-workshop/blob/main/notebooks/02_insitu_timeseries_ml.ipynb) | Buoy match-ups, ML retrieval, anomaly detection |
+| **3** — Build your own DB | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RicardoTeruelGutierrez/marmenor-eo-workshop/blob/main/notebooks/03_build_database.ipynb) | Live downloads + SQLite + pollution study |
+
+### 🔵 Run locally
+
+```bash
+git clone https://github.com/RicardoTeruelGutierrez/marmenor-eo-workshop.git
+cd marmenor-eo-workshop
+pip install -r requirements.txt
+jupyter notebook
+```
+
+The synthetic teaching datasets are already in `data/`. To grab real Sentinel-2 imagery for your own dates:
+
+```bash
+python scripts/download_sentinel2.py                          # 4 workshop scenes
+python scripts/download_sentinel2.py --range 2022-06-01:2022-09-30   # a whole season
+python scripts/download_sentinel2.py --date 2024-08-15                # any single date
+python scripts/download_sentinel2.py --month 2023-08                  # any month
+```
+
+### 👀 Just look at the results
+
+Open the rendered `.html` versions in `notebooks/` and `slides/` — every figure visible, no Python at all.
+
+---
+
 ## 1. What this workshop teaches
 
 A practitioner-level introduction to extracting and analyzing Earth observation data over the **Mar Menor coastal lagoon** (Murcia, Spain), combining:

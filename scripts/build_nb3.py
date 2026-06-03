@@ -79,6 +79,32 @@ already in `requirements.txt`.
 """)
 
 # ---------------------------------------------------------------------------
+# COLAB BOOTSTRAP — same notebook runs locally or in Google Colab
+# ---------------------------------------------------------------------------
+nb.md(r"""---
+## Run anywhere — Colab or your laptop
+
+Click to open this notebook in **Google Colab** and run it in your browser, no install required:
+
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RicardoTeruelGutierrez/marmenor-eo-workshop/blob/main/notebooks/03_build_database.ipynb)
+
+The next cell self-bootstraps. In Colab it clones the repo, installs dependencies and generates the synthetic datasets (~30 s, one time). On a local install it's a no-op.
+""")
+
+nb.code(r'''# Colab bootstrap (no-op on a local install)
+import sys, os
+IN_COLAB = "google.colab" in sys.modules
+if IN_COLAB and not os.path.exists("/content/workshop"):
+    print("Running in Colab - bootstrapping (~30s)...")
+    !git clone -q https://github.com/RicardoTeruelGutierrez/marmenor-eo-workshop.git /content/workshop
+    !pip install -q -r /content/workshop/requirements.txt
+    !python /content/workshop/scripts/generate_datasets.py
+if IN_COLAB:
+    %cd /content/workshop/notebooks
+    print("Ready - run the cells below.")
+''')
+
+# ---------------------------------------------------------------------------
 # SETUP
 # ---------------------------------------------------------------------------
 nb.md(r"""---
