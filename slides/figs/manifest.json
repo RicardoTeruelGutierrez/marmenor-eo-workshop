@@ -1,0 +1,96 @@
+{
+  "mod1": [
+    {
+      "file": "mod1_01.png",
+      "heading": "A.3 Lagoon-wide chlorophyll time series"
+    },
+    {
+      "file": "mod1_02.png",
+      "heading": "A.5 Day-of-year climatology and inter-annual anomaly"
+    },
+    {
+      "file": "mod1_03.png",
+      "heading": "A.6 The August-2021 marine heatwave and the oxygen connection"
+    },
+    {
+      "file": "mod1_04.png",
+      "heading": "SECTION C \u2014 Instructor figures from real Sentinel-2 GeoTIFFs"
+    },
+    {
+      "file": "mod1_05.png",
+      "heading": "C.2 NDCI \u2014 the chlorophyll index that actually measures the bloom"
+    },
+    {
+      "file": "mod1_06.png",
+      "heading": "C.3 Where does the bloom hit hardest? Zone analysis"
+    },
+    {
+      "file": "mod1_07.png",
+      "heading": "C.4 Synthetic sampling points over the real image"
+    }
+  ],
+  "mod2": [
+    {
+      "file": "mod2_01.png",
+      "heading": "1.1 Quick exploratory plot -- the August 2021 hypoxia crisis"
+    },
+    {
+      "file": "mod2_02.png",
+      "heading": "1.2 The 2019 DANA -- nitrate pulse and salinity drop"
+    },
+    {
+      "file": "mod2_03.png",
+      "heading": "2.1 Retrieval skill -- scatter plot, regression and metrics"
+    },
+    {
+      "file": "mod2_04.png",
+      "heading": "3.3 Final fit and feature importance"
+    },
+    {
+      "file": "mod2_05.png",
+      "heading": "4. Multivariate anomaly detection"
+    }
+  ],
+  "mod3": [
+    {
+      "file": "mod3_01.png",
+      "heading": "1.1 LIVE \u2014 a satellite snapshot for *any* date (NASA GIBS)"
+    },
+    {
+      "file": "mod3_02.png",
+      "heading": "1.2 LIVE \u2014 high-resolution Sentinel-2 from the cloud (STAC + COG)"
+    },
+    {
+      "file": "mod3_03.png",
+      "heading": "1.3 LIVE \u2014 pollution data for the lagoon (Open-Meteo Air-Quality)"
+    },
+    {
+      "file": "mod3_04.png",
+      "heading": "1.4 LIVE \u2014 sea-surface temperature time series (Open-Meteo Marine)"
+    },
+    {
+      "file": "mod3_05.png",
+      "heading": "What you unlock #1 \u2014 on-demand products with the **Process API**"
+    },
+    {
+      "file": "mod3_06.png",
+      "heading": "What you unlock #1b \u2014 the real **image** *and* the raw **band values**"
+    },
+    {
+      "file": "mod3_07.png",
+      "heading": "What you unlock #1b \u2014 the real **image** *and* the raw **band values**"
+    },
+    {
+      "file": "mod3_08.png",
+      "heading": "What you unlock #2 \u2014 a full time series with **no downloads** (Statistical API)"
+    },
+    {
+      "file": "mod3_09.png",
+      "heading": "Part 5 \u2014 Analyse: a pollution study, straight from SQL"
+    },
+    {
+      "file": "mod3_10.png",
+      "heading": "Joining satellite + in-situ in one query"
+    }
+  ]
+}

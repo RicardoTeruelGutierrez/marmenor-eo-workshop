@@ -1,310 +1,130 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mar Menor EO Workshop — Module 1</title>
-<style>
-  :root {
-    --ink:        #0e1a26;
-    --paper:      #f6f1e7;
-    --paper-2:    #eee5d4;
-    --accent:     #c2410c;
-    --accent-2:   #115e59;
-    --grey:       #6b6157;
-    --rule:       #1e2e3a;
-    --serif:      "Iowan Old Style", "Source Serif Pro", "Apple Garamond",
-                  "Baskerville", "Times New Roman", serif;
-    --mono:       "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--ink); }
-  body { font-family: var(--serif); color: var(--ink); min-height: 100vh;
-    display: flex; align-items: center; justify-content: center; }
-  .deck { width: min(95vw, 1280px); aspect-ratio: 16 / 9; background: var(--paper);
-    box-shadow: 0 30px 90px rgba(0,0,0,.5); position: relative; overflow: hidden; }
-  .slide { position: absolute; inset: 0; padding: 4.5rem 5.5rem; display: none;
-    flex-direction: column; background-image: radial-gradient(rgba(0,0,0,.03) 1px, transparent 1px);
-    background-size: 4px 4px; }
-  .slide.active { display: flex; }
-  .label { font-family: var(--mono); font-size: .72rem; letter-spacing: .25em;
-    text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; }
-  h1 { font-size: 4.4rem; font-weight: 500; line-height: 1; letter-spacing: -.025em;
-    margin: 0 0 1rem; font-style: italic; }
-  h2 { font-size: 2.6rem; font-weight: 500; line-height: 1.1; letter-spacing: -.02em; margin: 0 0 1.5rem; }
-  h3 { font-size: 1.25rem; font-weight: 600; margin: 0 0 .5rem; }
-  p, li { font-size: 1.15rem; line-height: 1.55; color: #2a2520; }
-  .lede { font-size: 1.45rem; line-height: 1.4; color: #3a2e22; max-width: 60ch; }
-  hr.rule { border: 0; height: 1px; background: var(--rule); margin: .5rem 0 2rem; width: 100%; }
-  .footer { position: absolute; bottom: 1.4rem; left: 5.5rem; right: 5.5rem;
-    display: flex; justify-content: space-between; font-family: var(--mono); font-size: .7rem;
-    letter-spacing: .15em; text-transform: uppercase; color: var(--grey);
-    border-top: 1px solid #d6cdba; padding-top: .8rem; }
-  .nav { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
-    display: flex; gap: .35rem; background: rgba(255,255,255,.08); padding: .35rem .6rem;
-    border-radius: 999px; backdrop-filter: blur(8px); }
-  .nav button { background: none; border: 0; color: var(--paper-2); font-family: var(--mono);
-    font-size: .8rem; cursor: pointer; padding: .25rem .55rem; border-radius: 99px; }
-  .nav button:hover { background: rgba(255,255,255,.12); }
-  .counter { color: var(--paper-2); font-family: var(--mono); font-size: .75rem; padding: .25rem .55rem; }
-  .two-col { display: grid; grid-template-columns: 1.1fr .9fr; gap: 3rem; flex: 1; align-items: start; }
-  .quad { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; flex: 1; }
-  .quad .card { border-left: 3px solid var(--accent-2); padding: .9rem 1.1rem; background: rgba(255,255,255,.45); }
-  .quad .card h3 { color: var(--accent-2); font-size: 1.05rem; font-family: var(--mono);
-    text-transform: uppercase; letter-spacing: .12em; }
-  .quad .card p { font-size: .95rem; margin: 0; }
-  .timeline { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 1.4rem; padding: 1rem 0; }
-  .ev { display: grid; grid-template-columns: 130px 1fr; gap: 1.5rem; align-items: baseline; }
-  .ev .y { font-family: var(--mono); font-size: 1.5rem; color: var(--accent); font-weight: 600; }
-  .ev .t { font-size: 1.1rem; }
-  .stat-row { display: flex; gap: 3rem; margin-top: auto; padding-top: 2rem; }
-  .stat { display: flex; flex-direction: column; }
-  .stat .n { font-size: 3rem; font-weight: 500; line-height: 1; color: var(--accent); font-style: italic; }
-  .stat .k { font-family: var(--mono); font-size: .75rem; letter-spacing: .15em;
-    text-transform: uppercase; color: var(--grey); margin-top: .5rem; }
-  pre.code { font-family: var(--mono); font-size: .85rem; background: var(--ink); color: #d4cdb9;
-    padding: 1.5rem; border-radius: 4px; white-space: pre; line-height: 1.5; overflow: hidden; }
-  pre.code .c { color: #7f7361; font-style: italic; }
-  pre.code .k { color: #e9a44b; }
-  pre.code .s { color: #b8c66e; }
-  ul.tight { padding-left: 1.2rem; }
-  ul.tight li { margin-bottom: .4rem; }
-  .cover { background: linear-gradient(160deg, var(--paper) 0%, var(--paper-2) 100%); }
-  .cover h1 { font-size: 5.2rem; max-width: 15ch; }
-  .cover .mono-label { font-family: var(--mono); font-size: .85rem; letter-spacing: .25em;
-    text-transform: uppercase; color: var(--accent); margin-bottom: 2.5rem; }
-  .lagoon-deco { position: absolute; right: -180px; bottom: -120px; width: 720px; opacity: .07; pointer-events: none; }
-  .num { font-family: var(--mono); color: var(--accent); }
-  .takeaway { display: grid; grid-template-columns: 40px 1fr; gap: 1.2rem; align-items: baseline; margin-bottom: 1.1rem; }
-  .takeaway .n { font-family: var(--mono); font-size: 1.4rem; color: var(--accent); font-weight: 600; }
-  code { font-family: var(--mono); font-size: .92em; background: rgba(0,0,0,.05); padding: .05em .3em; border-radius: 3px; }
-</style>
-</head>
-<body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mar Menor Workshop — Module 1</title><style>
+:root{
+  --ink:#0e1a26; --paper:#f6f1e7; --paper-2:#eee5d4; --accent:#c2410c;
+  --accent-2:#115e59; --grey:#6b6157; --rule:#1e2e3a;
+  --serif:"Iowan Old Style","Source Serif Pro","Apple Garamond","Baskerville","Times New Roman",serif;
+  --mono:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--ink);}
+body{font-family:var(--serif);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.deck{width:min(96vw,1320px);aspect-ratio:16/9;background:var(--paper);box-shadow:0 30px 90px rgba(0,0,0,.5);position:relative;overflow:hidden;}
+.slide{position:absolute;inset:0;padding:3.2rem 4rem;display:none;flex-direction:column;
+  background-image:radial-gradient(rgba(0,0,0,.03) 1px,transparent 1px);background-size:4px 4px;}
+.slide.active{display:flex;}
+.label{font-family:var(--mono);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:.7rem;}
+h1{font-size:3.8rem;font-weight:500;line-height:1.02;letter-spacing:-.025em;margin:0 0 1rem;font-style:italic;}
+h2{font-size:2.1rem;font-weight:500;line-height:1.08;letter-spacing:-.02em;margin:0 0 .5rem;}
+h3{font-size:1.05rem;font-weight:600;margin:0 0 .35rem;}
+p,li{font-size:1.02rem;line-height:1.5;color:#2a2520;}
+.lede{font-size:1.3rem;line-height:1.4;color:#3a2e22;max-width:60ch;}
+hr.rule{border:0;height:1px;background:var(--rule);margin:.3rem 0 1.1rem;width:100%;}
+.footer{position:absolute;bottom:1rem;left:4rem;right:4rem;display:flex;justify-content:space-between;
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--grey);
+  border-top:1px solid #d6cdba;padding-top:.55rem;}
+.nav{position:fixed;bottom:1.1rem;left:50%;transform:translateX(-50%);display:flex;gap:.3rem;
+  background:rgba(255,255,255,.08);padding:.3rem .55rem;border-radius:999px;backdrop-filter:blur(8px);z-index:10;}
+.nav button{background:none;border:0;color:var(--paper-2);font-family:var(--mono);font-size:.75rem;cursor:pointer;padding:.2rem .5rem;border-radius:99px;}
+.nav button:hover{background:rgba(255,255,255,.12);}
+.counter{color:var(--paper-2);font-family:var(--mono);font-size:.7rem;padding:.2rem .5rem;}
+code{font-family:var(--mono);font-size:.92em;background:rgba(0,0,0,.05);padding:.05em .3em;border-radius:3px;}
+pre.code{font-family:var(--mono);font-size:.82rem;background:var(--ink);color:#d4cdb9;
+  padding:1.1rem 1.3rem;border-radius:5px;white-space:pre;line-height:1.45;overflow:hidden;margin:0;}
+pre.code .c{color:#7f7361;font-style:italic;}
+pre.code .k{color:#e9a44b;}
+pre.code .s{color:#b8c66e;}
+pre.code .n{color:#86b8c9;}
+ul.tight{padding-left:1.1rem;margin:.3rem 0;}
+ul.tight li{margin-bottom:.3rem;}
+.fig{background:#0d1b2a;border-radius:5px;padding:.5rem;display:flex;align-items:center;justify-content:center;}
+.fig img{max-width:100%;max-height:100%;object-fit:contain;border-radius:3px;}
+/* step layout: code left, figure right */
+.step{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;flex:1;min-height:0;align-items:stretch;}
+.step .col{display:flex;flex-direction:column;min-height:0;}
+.step .col.explain p{margin:.2rem 0 .7rem;}
+.step .fig{flex:1;min-height:0;}
+/* figure-dominant layout */
+.figbig{display:grid;grid-template-columns:1fr;gap:.8rem;flex:1;min-height:0;}
+.figbig .fig{flex:1;min-height:0;}
+.figbig .cap{display:flex;gap:1.4rem;}
+.figbig .cap>div{flex:1;}
+/* two-text columns */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2.2rem;flex:1;align-items:start;}
+.pill{display:inline-block;font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:.15rem .5rem;border-radius:99px;margin-bottom:.6rem;}
+.pill.run{background:#dcefe6;color:var(--accent-2);}
+.pill.edit{background:#fbe6d8;color:var(--accent);}
+.pill.concept{background:#e7e2f3;color:#5b4a8a;}
+.stat-row{display:flex;gap:2.4rem;margin-top:auto;padding-top:1.2rem;}
+.stat{display:flex;flex-direction:column;}
+.stat .n{font-size:2.6rem;font-weight:500;line-height:1;color:var(--accent);font-style:italic;}
+.stat .k{font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--grey);margin-top:.4rem;}
+.divider{background:linear-gradient(160deg,var(--ink) 0%,#16263a 100%);color:var(--paper);}
+.divider h1{color:var(--paper);}
+.divider .lede{color:#cbd5dd;}
+.divider .label{color:#e9a44b;}
+.cover{background:linear-gradient(160deg,var(--ink) 0%,#16263a 100%);color:var(--paper);}
+.cover h1{color:var(--paper);font-size:4.6rem;}
+.cover .lede{color:#cbd5dd;}
+.cover .label{color:#e9a44b;}
+.cover .stat .k{color:#cbd5dd;}
+.takeaway{display:grid;grid-template-columns:34px 1fr;gap:1rem;align-items:baseline;margin-bottom:.8rem;}
+.takeaway .tn{font-family:var(--mono);font-size:1.2rem;color:var(--accent);font-weight:600;}
+table.mini{border-collapse:collapse;width:100%;margin-top:.4rem;}
+table.mini td,table.mini th{text-align:left;padding:.32rem .5rem;border-bottom:1px solid #d6cdba;font-size:.9rem;}
+table.mini th{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2);}
+.formula{font-size:1.25rem;text-align:center;background:rgba(255,255,255,.5);border-left:3px solid var(--accent-2);
+  padding:.8rem 1rem;margin:.6rem 0;font-family:var(--mono);}
+</style></head><body><div class="deck"><section class="slide active cover"><div class="label">Module 01 · notebook 01_satellite_data_extraction</div><h1>Reading chlorophyll<br>and heat from orbit.</h1><hr class="rule" style="background:var(--accent);width:200px;margin-top:1.4rem;"><p class="lede">Step by step: from raw Sentinel reflectance to the visible fingerprints of a dying lagoon — Sentinel-2 water colour and Sentinel-3 temperature.</p><div class="stat-row"><div class="stat"><span class="n">10 m</span><span class="k">S2 resolution</span></div><div class="stat"><span class="n">NDCI</span><span class="k">chlorophyll index</span></div><div class="stat"><span class="n">+2 °C</span><span class="k">2021 heatwave</span></div><div class="stat"><span class="n">18</span><span class="k">steps</span></div></div><div class="footer"><span>module 1 / 00</span><span>satellite data extraction · 75 min</span></div></section><section class="slide divider"><div class="label">Part 1 — the concepts you need first</div><h1 style="font-size:3.2rem;margin-top:.5rem;">Why this lagoon breaks<br>the textbook algorithms.</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">Three ideas before any code: Case-2 optics, the red-edge index, and how the notebook is split into runnable sections.</p><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide"><div class="label">§ 1.1 — Case-2 waters</div><h2><span class="pill concept">CONCEPT</span>Sediment, CDOM and macrophytes — not just phytoplankton.</h2><hr class="rule"><div class="two-col"><div><p class='lede'>Open-ocean (Case-1) algorithms assume phytoplankton alone drives the colour. The Mar Menor is shallow and nutrient-loaded, so three things move the signal independently of chlorophyll.</p><p>The fix: the <strong>C2RCC</strong> neural-network correction, then a locally-calibrated index.</p></div><div><h3>The three confounders</h3><ul class='tight'><li><strong>Suspended sediment</strong> raises blue/green → chl-a over-estimated</li><li><strong>CDOM</strong> from runoff absorbs in the blue</li><li><strong>Macrophytes</strong> on the bottom add a NIR signal</li></ul><p style='margin-top:.8rem;color:#b8460c;'><em>L2A surface reflectance is a LAND correction — not, by itself, an aquatic C2RCC product.</em></p></div></div><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide"><div class="label">§ 1.2 — The chlorophyll index</div><h2><span class="pill concept">CONCEPT</span>The red-edge is the trick.</h2><hr class="rule"><div class="two-col"><div><p class='lede'>Chlorophyll absorbs strongly in the red (B04, 665 nm) and reflects in the red-edge (B05, 705 nm). Any ratio of the two rises with concentration.</p><div class='formula'>NDCI = (B05 − B04) / (B05 + B04)</div><p>Robust to sediment, unlike a blue/green ratio.</p></div><div><h3>Two forms we use</h3><ul class='tight'><li><strong>B05/B04 ratio</strong> — the simple proxy (Section A)</li><li><strong>NDCI</strong> — normalized, bounded, per-pixel (Section C)</li></ul><p style='margin-top:.6rem;'>Real Mar Menor NDCI runs from <strong>−0.28</strong> (clear winter water) to <strong>−0.05</strong> (summer bloom).</p></div></div><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide"><div class="label">§ 1.3 — How the notebook is built</div><h2><span class="pill concept">CONCEPT</span>Three sections, three failure modes kept apart.</h2><hr class="rule"><div class="two-col"><div><h3>A — Synthetic, offline</h3><p>Cached datasets in <code>data/</code>. Runs in class with no internet, no account.</p><h3 style='margin-top:.7rem;'>B — Real workflow</h3><p>The CDSE / STAC download patterns. Shown, not run in class.</p><h3 style='margin-top:.7rem;'>C — Real imagery</h3><p>Figures from real Sentinel-2 scenes. The lagoon outline is the actual satellite coastline.</p></div><div><p class='lede'>The split means a student never gets stuck mid-lesson: “what runs anywhere” is cleanly separated from “what needs the cloud”.</p><p style='margin-top:.8rem;'>Open the <strong>Table of contents</strong> (☰) in Colab to jump between them.</p></div></div><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide divider"><div class="label">Section A — synthetic, runs offline</div><h1 style="font-size:3.2rem;margin-top:.5rem;">The long view of the crisis.</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">Everything here runs from cached data calibrated against the published literature. The documented crises appear in the right months.</p><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide"><div class="label">§ A — step 1 · load + resample</div><h2>Lagoon-wide weekly chlorophyll</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Read the 12-point table, average to a lagoon-wide <strong>weekly mean</strong>, and smooth with a 4-week rolling window. The four crises light up.</p><pre class="code">s2 = pd.read_parquet(
+    DATA/&#x27;sentinel2_waterquality.parquet&#x27;)
 
-<div class="deck" id="deck">
-
-<!-- Cover -->
-<section class="slide active cover">
-  <div class="mono-label">Module 01 · Notebook 01_satellite_data_extraction</div>
-  <h1>Reading chlorophyll<br>and heat from orbit.</h1>
-  <hr class="rule" style="background: var(--accent); width: 200px; margin-top: 2rem;">
-  <p class="lede">Sentinel-2 water quality and Sentinel-3 sea-surface temperature
-    over the Mar Menor — from raw reflectance to the signature of a dying lagoon.</p>
-  <div class="stat-row">
-    <div class="stat"><span class="n">10 m</span><span class="k">Sentinel-2 pixel</span></div>
-    <div class="stat"><span class="n">NDCI</span><span class="k">chlorophyll index</span></div>
-    <div class="stat"><span class="n">+2 °C</span><span class="k">2021 heatwave</span></div>
-    <div class="stat"><span class="n">A·B·C</span><span class="k">three sections</span></div>
-  </div>
-  <svg class="lagoon-deco" viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
-    <path fill="currentColor" d="M100,15 C140,15 175,55 175,120 C175,175 145,235 100,235 C55,235 25,180 25,120 C25,55 60,15 100,15 Z M105,40 C75,40 50,65 45,110 C42,140 55,170 80,195 C95,210 110,205 125,195 C155,175 165,135 160,100 C155,65 135,40 105,40 Z"/>
-  </svg>
-  <div class="footer"><span>module 1 / 00</span><span>satellite data extraction · 75 min</span></div>
-</section>
-
-<!-- Case-2 -->
-<section class="slide">
-  <div class="label">§ 01 — Why the lagoon is hard</div>
-  <h2>Case-2 waters break the<br>textbook ocean-colour algorithms.</h2>
-  <hr class="rule">
-  <div class="two-col">
-    <div>
-      <p class="lede">Open-ocean (Case-1) algorithms assume phytoplankton alone
-        drives the colour. The Mar Menor is shallow, wind-stirred and
-        nutrient-loaded, so three things confound the signal at once.</p>
-      <p style="margin-top:1.2rem;">The operational fix is the <strong>C2RCC</strong>
-        neural-network atmospheric correction, then a locally-calibrated index.
-        <em>Caveat we state explicitly: Sentinel-2 L2A surface reflectance is a
-        land correction — it is not, by itself, an aquatic C2RCC product.</em></p>
-    </div>
-    <div>
-      <h3>The three confounders</h3>
-      <ul class="tight">
-        <li><strong>Suspended sediment</strong> raises blue/green reflectance → chl-a over-estimated</li>
-        <li><strong>CDOM</strong> (coloured dissolved organics from runoff) absorbs in the blue</li>
-        <li><strong>Macrophytes</strong> on the bottom add a near-infrared signal</li>
-      </ul>
-      <h3 style="margin-top:1.4rem;">Our chlorophyll proxy</h3>
-      <p><code>Chl-a ∝ Rrs(B05) / Rrs(B04)</code> — chlorophyll absorbs in the red
-        (665 nm) and reflects in the red-edge (705 nm), so the ratio rises with
-        concentration.</p>
-    </div>
-  </div>
-  <div class="footer"><span>module 1 / 01</span><span>case-2 waters</span></div>
-</section>
-
-<!-- A/B/C structure -->
-<section class="slide">
-  <div class="label">§ 02 — How the notebook is built</div>
-  <h2>Three clearly separated sections.</h2>
-  <hr class="rule">
-  <div class="quad" style="grid-template-columns:1fr 1fr 1fr; align-items:stretch;">
-    <div class="card">
-      <h3>A · Synthetic</h3>
-      <p>Cached datasets, fully reproducible <strong>offline in class</strong>.
-      The 12-point chl-a series and the SST cube. No internet, no account.</p>
-    </div>
-    <div class="card">
-      <h3>B · Real workflow</h3>
-      <p>The patterns to discover and download real Sentinel data from
-      <strong>CDSE / STAC</strong>. Shown, not run in class (needs a free account).</p>
-    </div>
-    <div class="card">
-      <h3>C · Real imagery</h3>
-      <p>Instructor figures from real Sentinel-2 GeoTIFFs: True-Colour, NDCI,
-      zone analysis. The lagoon outline is the actual satellite coastline.</p>
-    </div>
-  </div>
-  <p style="margin-top:1.6rem;" class="lede">The split keeps "what runs anywhere"
-    cleanly apart from "what needs the cloud" — students never get stuck.</p>
-  <div class="footer"><span>module 1 / 02</span><span>structure A·B·C</span></div>
-</section>
-
-<!-- Section A: chl time series -->
-<section class="slide">
-  <div class="label">§ 03 — Section A · the long view</div>
-  <h2>Four crises, one chlorophyll curve.</h2>
-  <hr class="rule">
-  <div class="timeline">
-    <div class="ev"><span class="y">2016</span><span class="t"><strong>First green-soup crisis.</strong> Accumulated agricultural nitrate tips the lagoon.</span></div>
-    <div class="ev"><span class="y">2019</span><span class="t"><strong>DANA flood pulse.</strong> 300+ mm in 48 h; a nitrate + freshwater plume.</span></div>
-    <div class="ev"><span class="y">2021</span><span class="t"><strong>August anoxia &amp; fish-kill.</strong> The climax event — visible in chl-a and SST.</span></div>
-    <div class="ev"><span class="y">2025</span><span class="t"><strong>Bloom resurgence.</strong> The early-warning test repeats.</span></div>
-  </div>
-  <p class="lede">We resample the 12 sampling points to a lagoon-wide weekly mean
-    and the documented crises light up in the right months — proof the synthetic
-    data is calibrated, not invented.</p>
-  <div class="footer"><span>module 1 / 03</span><span>chlorophyll time series</span></div>
-</section>
-
-<!-- Section A: SST + O2 -->
-<section class="slide">
-  <div class="label">§ 04 — Section A · the kill mechanism</div>
-  <h2>A marine heatwave that<br>strangles the oxygen.</h2>
-  <hr class="rule">
-  <div class="two-col">
-    <div>
-      <p class="lede">August 2021 ran ~+2 °C above the climatology. We show the SST
-        field clipped to the real lagoon outline, its anomaly, and the physics that
-        links them to the fish-kill.</p>
-      <div class="stat-row" style="margin-top:1.5rem;padding-top:1rem;">
-        <div class="stat"><span class="n">30.5°</span><span class="k">Aug 2021 mean</span></div>
-        <div class="stat"><span class="n">+1.9°</span><span class="k">anomaly</span></div>
-        <div class="stat"><span class="n">−0.3</span><span class="k">mg/L O₂ lost</span></div>
-      </div>
-    </div>
-    <div>
-      <h3>The chain, quantified</h3>
-      <p>Warmer water holds less dissolved oxygen (Benson–Krause solubility).
-        The jump from 27.5 °C to 30.5 °C alone removes ~0.3 mg/L of O₂ capacity —
-        and at night the bloom <em>consumes</em> oxygen. Combined with
-        stratification, that is the recipe for bottom anoxia.</p>
-      <p style="margin-top:1rem;"><strong>Teaching point:</strong> SST is not a
-        curiosity — it is a direct, computable driver of the ecological collapse.</p>
-    </div>
-  </div>
-  <div class="footer"><span>module 1 / 04</span><span>heatwave → anoxia</span></div>
-</section>
-
-<!-- Section B: get the data -->
-<section class="slide">
-  <div class="label">§ 05 — Section B · how to get the data</div>
-  <h2>The current Copernicus access path.</h2>
-  <hr class="rule">
-  <div class="two-col">
-    <pre class="code"><span class="c"># Current CDSE STAC endpoint (Nov 2025)</span>
-<span class="k">from</span> pystac_client <span class="k">import</span> Client
-
+weekly = (s2.set_index(&#x27;date&#x27;)[&#x27;chla_mg_m3&#x27;]
+            .resample(&#x27;W&#x27;).mean()
+            .rolling(4, min_periods=1).mean())</pre></div><div class="col"><div class="fig"><img src="figs/mod1_01.png" alt=""></div></div></div><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide"><div class="label">§ A — step 2 · day-of-year climatology</div><h2>SST anomaly: signal vs the normal year</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Build a <strong>day-of-year climatology</strong> (mean per day 1–365 across all years) and subtract it. What remains is the anomaly — red = warmer than usual.</p><pre class="code">clim = df.groupby(&#x27;doy&#x27;)[&#x27;sst&#x27;].mean()
+df = df.join(clim, on=&#x27;doy&#x27;, rsuffix=&#x27;_clim&#x27;)
+df[&#x27;anomaly&#x27;] = df[&#x27;sst&#x27;] - df[&#x27;mean&#x27;]</pre></div><div class="col"><div class="fig"><img src="figs/mod1_02.png" alt=""></div></div></div><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide"><div class="label">§ A — step 3 · heatwave → oxygen</div><h2>A +2 °C heatwave strangles the oxygen</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>August 2021 ran <strong>+1.9 °C</strong> above climatology. The Benson–Krause curve turns that into a <strong>−0.3 mg/L</strong> drop in oxygen capacity — the kill mechanism, quantified.</p><pre class="code"><span class="k">def</span> o2_sat(T, S=37.0):
+<span class="c">    # Benson-Krause O2 solubility (mg/L)</span>
+    ...
+drop = o2_sat(27.46) - o2_sat(30.50)
+<span class="c"># -&gt; 0.31 mg/L lost from 2020 to 2021</span></pre></div><div class="col"><div class="fig"><img src="figs/mod1_03.png" alt=""></div></div></div><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide divider"><div class="label">Section B — how to get the real data</div><h1 style="font-size:3.2rem;margin-top:.5rem;">Discover &amp; download, the 2026 way.</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">Reference patterns for your own project: the current CDSE STAC endpoint and the Cloud-Optimised-GeoTIFF window read.</p><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide"><div class="label">§ B — step 1 · STAC search</div><h2><span class="pill edit">REFERENCE</span>Find scenes over the lagoon</h2><hr class="rule"><div class="two-col"><div><p class='lede'>SciHub is retired. The current entry point is <strong>CDSE</strong>. Search the catalogue by area, dates and cloud cover.</p><ul class='tight'><li>Endpoint: <code>stac.dataspace.copernicus.eu/v1</code></li><li>Collection: lowercase <code>sentinel-2-l2a</code></li><li>Use <strong>L2A</strong> (surface), not L1C</li></ul></div><div><pre class='code'><span class='k'>from</span> pystac_client <span class='k'>import</span> Client
 cat = Client.open(
-  <span class="s">"https://stac.dataspace."</span>
-  <span class="s">"copernicus.eu/v1/"</span>)
-
+  <span class='s'>"https://stac.dataspace."</span>
+  <span class='s'>"copernicus.eu/v1/"</span>)
 search = cat.search(
-  collections=[<span class="s">"sentinel-2-l2a"</span>],
-  datetime=<span class="s">"2021-08-01/2021-09-30"</span>,
+  collections=[<span class='s'>"sentinel-2-l2a"</span>],
+  datetime=<span class='s'>"2021-08-01/2021-09-30"</span>,
   bbox=BBOX,
-  query={<span class="s">"eo:cloud_cover"</span>: {<span class="s">"lt"</span>: 20}})</pre>
-    <div>
-      <h3>What students must remember</h3>
-      <ul class="tight">
-        <li>SciHub is dead; <strong>CDSE</strong> is the entry point.</li>
-        <li>New STAC root <code>stac.dataspace.copernicus.eu/v1</code>;
-          collection is lowercase <code>sentinel-2-l2a</code>.</li>
-        <li>Use <strong>L2A</strong> (surface), not L1C (top-of-atmosphere).</li>
-        <li>The <strong>COG trick</strong>: read only the AOI window — a few MB,
-          not the ~800 MB scene.</li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer"><span>module 1 / 05</span><span>CDSE · STAC · COG</span></div>
-</section>
+  query={<span class='s'>"eo:cloud_cover"</span>:{<span class='s'>"lt"</span>:20}})</pre></div></div><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide"><div class="label">§ B — step 2 · the COG trick</div><h2><span class="pill edit">REFERENCE</span>Download only the AOI window</h2><hr class="rule"><div class="two-col"><div><p class='lede'>A full scene is ~800 MB. A Cloud-Optimised GeoTIFF is internally tiled, so <code>rasterio</code> reads <strong>only the pixels over your bounding box</strong> — a few MB over HTTP.</p><p>This single habit is what makes EO pipelines scale.</p></div><div><pre class='code'><span class='k'>from</span> rasterio.windows <span class='k'>import</span> from_bounds
+<span class='k'>with</span> rasterio.open(tci_url) <span class='k'>as</span> src:
+    win = from_bounds(*bbox,
+        transform=src.transform)
+    rgb = src.read(window=win)
+<span class='c'># ~8 MB instead of ~240 MB</span></pre></div></div><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide divider"><div class="label">Section C — real Sentinel-2 imagery</div><h1 style="font-size:3.2rem;margin-top:.5rem;">Pixel-perfect, from real scenes.</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">Four cloud-free, full-coverage scenes spanning the 2021 crisis, chosen by measuring real coverage AND cloud over the lagoon itself.</p><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide"><div class="label">§ C — step 1 · True-Colour composites</div><h2>What the satellite actually saw</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Load each cached True-Colour GeoTIFF and draw the lagoon outline. The yellow line is extracted from the <strong>NIR band itself</strong> — 191 exact vertices, not a hand-drawn polygon.</p><pre class="code"><span class="k">def</span> load_tci(path):
+    <span class="k">with</span> rasterio.open(path) <span class="k">as</span> src:
+        <span class="k">return</span> np.moveaxis(src.read(),0,-1)
 
-<!-- Section C: real figures -->
-<section class="slide">
-  <div class="label">§ 06 — Section C · real imagery</div>
-  <h2>Pixel-perfect, from real scenes.</h2>
-  <hr class="rule">
-  <div class="quad">
-    <div class="card">
-      <h3>True Colour</h3>
-      <p>Four cloud-free, full-coverage scenes (Feb 2020 → Mar 2022). Selected by
-      measuring real coverage <em>and</em> cloud over the lagoon — not the catalogue %.</p>
-    </div>
-    <div class="card">
-      <h3>NDCI per pixel</h3>
-      <p>The chlorophyll index over 1.3 M water pixels. Clear winter water ≈ −0.28;
-      summer 2021 bloom ≈ −0.05 — a large, visible jump on a shared colour scale.</p>
-    </div>
-    <div class="card">
-      <h3>Zone analysis</h3>
-      <p>North / Centre / South medians reveal the gradient driven by agricultural
-      runoff on the north-west shore.</p>
-    </div>
-    <div class="card">
-      <h3>Outline from NIR</h3>
-      <p>The lagoon boundary is extracted from the near-infrared band itself —
-      191 vertices, exact, not a hand-drawn polygon.</p>
-    </div>
-  </div>
-  <div class="footer"><span>module 1 / 06</span><span>true colour · NDCI · zones</span></div>
-</section>
-
-<!-- Takeaways -->
-<section class="slide">
-  <div class="label">§ 07 — What to walk away with</div>
-  <h2>Module 1 in four sentences.</h2>
-  <hr class="rule">
-  <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
-    <div class="takeaway"><span class="n">1</span><span><strong>CDSE, not SciHub.</strong> STAC at <code>stac.dataspace.copernicus.eu/v1</code>, collection <code>sentinel-2-l2a</code>.</span></div>
-    <div class="takeaway"><span class="n">2</span><span><strong>Case-2 means be careful.</strong> Atmospheric-correct with C2RCC; never trust raw L2A as an aquatic product.</span></div>
-    <div class="takeaway"><span class="n">3</span><span><strong>NDCI separates clear water from bloom</strong> and exposes the north–south nutrient gradient.</span></div>
-    <div class="takeaway"><span class="n">4</span><span><strong>A +2 °C heatwave removes ~0.3 mg/L of O₂</strong> — enough, with night-time bloom respiration, to drive the 2021 anoxia.</span></div>
-  </div>
-  <div class="footer"><span>module 1 / 07</span><span>fin · module 1</span></div>
-</section>
-
-</div>
-
-<div class="nav">
-  <button id="prev">← prev</button>
-  <span class="counter" id="counter">1 / 8</span>
-  <button id="next">next →</button>
-</div>
-
-<script>
-  const slides = document.querySelectorAll(".slide");
-  let idx = 0;
-  const show = i => {
-    slides.forEach((s, k) => s.classList.toggle("active", k === i));
-    document.getElementById("counter").textContent = `${i+1} / ${slides.length}`;
-  };
-  document.getElementById("next").onclick = () => { idx = (idx+1) % slides.length; show(idx); };
-  document.getElementById("prev").onclick = () => { idx = (idx-1+slides.length) % slides.length; show(idx); };
-  document.addEventListener("keydown", e => {
-    if (e.key === "ArrowRight" || e.key === " ") { idx = (idx+1) % slides.length; show(idx); }
-    if (e.key === "ArrowLeft")                   { idx = (idx-1+slides.length) % slides.length; show(idx); }
-  });
-</script>
-</body>
-</html>
+<span class="k">for</span> key <span class="k">in</span> [&#x27;baseline&#x27;,&#x27;bloom&#x27;,&#x27;peak&#x27;,&#x27;recovery&#x27;]:
+    ax.imshow(load_tci(f&#x27;../data/s2_{key}_TCI.tif&#x27;))</pre></div><div class="col"><div class="fig"><img src="figs/mod1_04.png" alt=""></div></div></div><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide"><div class="label">§ C — step 2 · NDCI per pixel</div><h2>The chlorophyll index, 1.3 M pixels</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Compute NDCI on every water pixel (clouds masked). Same colour scale across all four dates: <strong>summer 2021 stands out hard</strong> against the clear winter baseline.</p><pre class="code">b05 = load_band(f&#x27;s2_{key}_B05.tif&#x27;)
+b04 = load_band(f&#x27;s2_{key}_B04.tif&#x27;)
+valid = WATER_MASK &amp; (b04&gt;30) &amp; (b04&lt;800)
+ndci = (b05 - b04) / (b05 + b04)
+ndci = np.where(valid, ndci, np.nan)</pre></div><div class="col"><div class="fig"><img src="figs/mod1_05.png" alt=""></div></div></div><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide"><div class="label">§ C — step 3 · zone analysis</div><h2>Where does the bloom hit hardest?</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Split the lagoon into North / Centre / South and take the median NDCI per zone, per date. The <strong>north-west shore</strong> — fed by agricultural runoff — is consistently highest.</p><pre class="code">ZONES = {&#x27;north&#x27;: LAT2D &gt; 37.72,
+         &#x27;centre&#x27;: (LAT2D&lt;=37.72)&amp;(LAT2D&gt;37.66),
+         &#x27;south&#x27;: LAT2D &lt;= 37.66}
+<span class="k">for</span> z, m <span class="k">in</span> ZONES.items():
+    med = np.ma.median(ndci[m &amp; ~ndci.mask])</pre></div><div class="col"><div class="fig"><img src="figs/mod1_06.png" alt=""></div></div></div><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide"><div class="label">§ C — step 4 · points on the real image</div><h2>Synthetic points over real pixels</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>The 12 sampling points (Section A) drawn over the real crisis-peak scene. The coastline is the satellite's — context the synthetic data alone cannot give.</p><pre class="code">img = load_tci(&#x27;../data/s2_peak_TCI.tif&#x27;)
+ax.imshow(img, extent=ext, origin=&#x27;upper&#x27;)
+ax.scatter(pts.lon, pts.lat,
+           c=pts.chla_mg_m3, cmap=CMAP_CHLA)</pre></div><div class="col"><div class="fig"><img src="figs/mod1_07.png" alt=""></div></div></div><div class="footer"><span>module 1</span><span>satellite data extraction</span></div></section><section class="slide divider"><div class="label">§ — what to walk away with</div><h1 style="font-size:2.6rem;">Module 1 in four lines.</h1><hr class="rule"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;"><div class="takeaway"><span class="tn">1</span><span><strong>CDSE, not SciHub.</strong> STAC at stac.dataspace.copernicus.eu/v1, collection sentinel-2-l2a.</span></div><div class="takeaway"><span class="tn">2</span><span><strong>Case-2 means be careful.</strong> Atmospheric-correct with C2RCC; never trust raw L2A as an aquatic product.</span></div><div class="takeaway"><span class="tn">3</span><span><strong>NDCI separates clear water from bloom</strong> and exposes the north–south nutrient gradient.</span></div><div class="takeaway"><span class="tn">4</span><span><strong>A +2 °C heatwave removes ~0.3 mg/L O₂</strong> — enough, with night-time respiration, to drive the 2021 anoxia.</span></div></div><div class="footer"><span>module 1 / fin</span><span>satellite data extraction</span></div></section></div><div class="nav"><button id="prev">&larr; prev</button><span class="counter" id="counter"></span><button id="next">next &rarr;</button></div><script>
+const slides=[...document.querySelectorAll('.slide')];let i=0;
+const show=n=>{i=(n+slides.length)%slides.length;
+ slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+ document.getElementById('counter').textContent=(i+1)+' / '+slides.length;
+ location.hash=i+1;};
+document.getElementById('next').onclick=()=>show(i+1);
+document.getElementById('prev').onclick=()=>show(i-1);
+document.addEventListener('keydown',e=>{
+ if(e.key==='ArrowRight'||e.key===' ')show(i+1);
+ if(e.key==='ArrowLeft')show(i-1);});
+const start=parseInt(location.hash.replace('#',''))||1;show(start-1);
+</script></body></html>

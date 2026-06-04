@@ -1,281 +1,133 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mar Menor EO Workshop — Module 3</title>
-<style>
-  :root {
-    --ink:#0e1a26; --paper:#f6f1e7; --paper-2:#eee5d4; --accent:#c2410c;
-    --accent-2:#115e59; --grey:#6b6157; --rule:#1e2e3a;
-    --serif:"Iowan Old Style","Source Serif Pro","Apple Garamond","Baskerville","Times New Roman",serif;
-    --mono:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--ink); }
-  body { font-family: var(--serif); color: var(--ink); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-  .deck { width: min(95vw, 1280px); aspect-ratio: 16 / 9; background: var(--paper); box-shadow: 0 30px 90px rgba(0,0,0,.5); position: relative; overflow: hidden; }
-  .slide { position: absolute; inset: 0; padding: 4.5rem 5.5rem; display: none; flex-direction: column;
-    background-image: radial-gradient(rgba(0,0,0,.03) 1px, transparent 1px); background-size: 4px 4px; }
-  .slide.active { display: flex; }
-  .label { font-family: var(--mono); font-size: .72rem; letter-spacing: .25em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; }
-  h1 { font-size: 4.4rem; font-weight: 500; line-height: 1; letter-spacing: -.025em; margin: 0 0 1rem; font-style: italic; }
-  h2 { font-size: 2.6rem; font-weight: 500; line-height: 1.1; letter-spacing: -.02em; margin: 0 0 1.5rem; }
-  h3 { font-size: 1.25rem; font-weight: 600; margin: 0 0 .5rem; }
-  p, li { font-size: 1.15rem; line-height: 1.55; color: #2a2520; }
-  .lede { font-size: 1.45rem; line-height: 1.4; color: #3a2e22; max-width: 60ch; }
-  hr.rule { border: 0; height: 1px; background: var(--rule); margin: .5rem 0 2rem; width: 100%; }
-  .footer { position: absolute; bottom: 1.4rem; left: 5.5rem; right: 5.5rem; display: flex; justify-content: space-between;
-    font-family: var(--mono); font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--grey);
-    border-top: 1px solid #d6cdba; padding-top: .8rem; }
-  .nav { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); display: flex; gap: .35rem;
-    background: rgba(255,255,255,.08); padding: .35rem .6rem; border-radius: 999px; backdrop-filter: blur(8px); }
-  .nav button { background: none; border: 0; color: var(--paper-2); font-family: var(--mono); font-size: .8rem; cursor: pointer; padding: .25rem .55rem; border-radius: 99px; }
-  .nav button:hover { background: rgba(255,255,255,.12); }
-  .counter { color: var(--paper-2); font-family: var(--mono); font-size: .75rem; padding: .25rem .55rem; }
-  .two-col { display: grid; grid-template-columns: 1.1fr .9fr; gap: 3rem; flex: 1; align-items: start; }
-  .quad { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; flex: 1; }
-  .quad .card { border-left: 3px solid var(--accent-2); padding: .9rem 1.1rem; background: rgba(255,255,255,.45); }
-  .quad .card h3 { color: var(--accent-2); font-size: 1.05rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: .12em; }
-  .quad .card p { font-size: .95rem; margin: 0; }
-  .stat-row { display: flex; gap: 3rem; margin-top: auto; padding-top: 2rem; }
-  .stat { display: flex; flex-direction: column; }
-  .stat .n { font-size: 3rem; font-weight: 500; line-height: 1; color: var(--accent); font-style: italic; }
-  .stat .k { font-family: var(--mono); font-size: .75rem; letter-spacing: .15em; text-transform: uppercase; color: var(--grey); margin-top: .5rem; }
-  pre.code { font-family: var(--mono); font-size: .85rem; background: var(--ink); color: #d4cdb9; padding: 1.5rem; border-radius: 4px; white-space: pre; line-height: 1.5; overflow: hidden; }
-  pre.code .c { color: #7f7361; font-style: italic; }
-  pre.code .k { color: #e9a44b; }
-  pre.code .s { color: #b8c66e; }
-  ul.tight { padding-left: 1.2rem; }
-  ul.tight li { margin-bottom: .4rem; }
-  .cover { background: linear-gradient(160deg, var(--paper) 0%, var(--paper-2) 100%); }
-  .cover h1 { font-size: 5rem; max-width: 16ch; }
-  .cover .mono-label { font-family: var(--mono); font-size: .85rem; letter-spacing: .25em; text-transform: uppercase; color: var(--accent); margin-bottom: 2.5rem; }
-  .lagoon-deco { position: absolute; right: -180px; bottom: -120px; width: 720px; opacity: .07; pointer-events: none; }
-  code { font-family: var(--mono); font-size: .92em; background: rgba(0,0,0,.05); padding: .05em .3em; border-radius: 3px; }
-  .takeaway { display: grid; grid-template-columns: 40px 1fr; gap: 1.2rem; align-items: baseline; margin-bottom: 1rem; }
-  .takeaway .n { font-family: var(--mono); font-size: 1.4rem; color: var(--accent); font-weight: 600; }
-  .pipe { display: flex; align-items: stretch; gap: .5rem; flex: 1; align-items: center; }
-  .pipe .step { flex: 1; background: rgba(255,255,255,.5); border-top: 3px solid var(--accent-2); padding: 1rem .8rem; }
-  .pipe .step .k { font-family: var(--mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
-  .pipe .step h3 { font-size: 1.05rem; margin: .3rem 0 .3rem; }
-  .pipe .step p { font-size: .85rem; margin: 0; }
-  .pipe .arrow { color: var(--accent); font-family: var(--mono); font-size: 1.3rem; }
-  table.cmp { width:100%; border-collapse: collapse; margin-top: .3rem; }
-  table.cmp th, table.cmp td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid #d6cdba; font-size: .98rem; }
-  table.cmp th { font-family: var(--mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-2); }
-  table.cmp td.tick { color: var(--accent-2); font-weight: 700; }
-  table.cmp td.lock { color: var(--grey); }
-</style>
-</head>
-<body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mar Menor Workshop — Module 3</title><style>
+:root{
+  --ink:#0e1a26; --paper:#f6f1e7; --paper-2:#eee5d4; --accent:#c2410c;
+  --accent-2:#115e59; --grey:#6b6157; --rule:#1e2e3a;
+  --serif:"Iowan Old Style","Source Serif Pro","Apple Garamond","Baskerville","Times New Roman",serif;
+  --mono:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--ink);}
+body{font-family:var(--serif);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.deck{width:min(96vw,1320px);aspect-ratio:16/9;background:var(--paper);box-shadow:0 30px 90px rgba(0,0,0,.5);position:relative;overflow:hidden;}
+.slide{position:absolute;inset:0;padding:3.2rem 4rem;display:none;flex-direction:column;
+  background-image:radial-gradient(rgba(0,0,0,.03) 1px,transparent 1px);background-size:4px 4px;}
+.slide.active{display:flex;}
+.label{font-family:var(--mono);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:.7rem;}
+h1{font-size:3.8rem;font-weight:500;line-height:1.02;letter-spacing:-.025em;margin:0 0 1rem;font-style:italic;}
+h2{font-size:2.1rem;font-weight:500;line-height:1.08;letter-spacing:-.02em;margin:0 0 .5rem;}
+h3{font-size:1.05rem;font-weight:600;margin:0 0 .35rem;}
+p,li{font-size:1.02rem;line-height:1.5;color:#2a2520;}
+.lede{font-size:1.3rem;line-height:1.4;color:#3a2e22;max-width:60ch;}
+hr.rule{border:0;height:1px;background:var(--rule);margin:.3rem 0 1.1rem;width:100%;}
+.footer{position:absolute;bottom:1rem;left:4rem;right:4rem;display:flex;justify-content:space-between;
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--grey);
+  border-top:1px solid #d6cdba;padding-top:.55rem;}
+.nav{position:fixed;bottom:1.1rem;left:50%;transform:translateX(-50%);display:flex;gap:.3rem;
+  background:rgba(255,255,255,.08);padding:.3rem .55rem;border-radius:999px;backdrop-filter:blur(8px);z-index:10;}
+.nav button{background:none;border:0;color:var(--paper-2);font-family:var(--mono);font-size:.75rem;cursor:pointer;padding:.2rem .5rem;border-radius:99px;}
+.nav button:hover{background:rgba(255,255,255,.12);}
+.counter{color:var(--paper-2);font-family:var(--mono);font-size:.7rem;padding:.2rem .5rem;}
+code{font-family:var(--mono);font-size:.92em;background:rgba(0,0,0,.05);padding:.05em .3em;border-radius:3px;}
+pre.code{font-family:var(--mono);font-size:.82rem;background:var(--ink);color:#d4cdb9;
+  padding:1.1rem 1.3rem;border-radius:5px;white-space:pre;line-height:1.45;overflow:hidden;margin:0;}
+pre.code .c{color:#7f7361;font-style:italic;}
+pre.code .k{color:#e9a44b;}
+pre.code .s{color:#b8c66e;}
+pre.code .n{color:#86b8c9;}
+ul.tight{padding-left:1.1rem;margin:.3rem 0;}
+ul.tight li{margin-bottom:.3rem;}
+.fig{background:#0d1b2a;border-radius:5px;padding:.5rem;display:flex;align-items:center;justify-content:center;}
+.fig img{max-width:100%;max-height:100%;object-fit:contain;border-radius:3px;}
+/* step layout: code left, figure right */
+.step{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;flex:1;min-height:0;align-items:stretch;}
+.step .col{display:flex;flex-direction:column;min-height:0;}
+.step .col.explain p{margin:.2rem 0 .7rem;}
+.step .fig{flex:1;min-height:0;}
+/* figure-dominant layout */
+.figbig{display:grid;grid-template-columns:1fr;gap:.8rem;flex:1;min-height:0;}
+.figbig .fig{flex:1;min-height:0;}
+.figbig .cap{display:flex;gap:1.4rem;}
+.figbig .cap>div{flex:1;}
+/* two-text columns */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2.2rem;flex:1;align-items:start;}
+.pill{display:inline-block;font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:.15rem .5rem;border-radius:99px;margin-bottom:.6rem;}
+.pill.run{background:#dcefe6;color:var(--accent-2);}
+.pill.edit{background:#fbe6d8;color:var(--accent);}
+.pill.concept{background:#e7e2f3;color:#5b4a8a;}
+.stat-row{display:flex;gap:2.4rem;margin-top:auto;padding-top:1.2rem;}
+.stat{display:flex;flex-direction:column;}
+.stat .n{font-size:2.6rem;font-weight:500;line-height:1;color:var(--accent);font-style:italic;}
+.stat .k{font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--grey);margin-top:.4rem;}
+.divider{background:linear-gradient(160deg,var(--ink) 0%,#16263a 100%);color:var(--paper);}
+.divider h1{color:var(--paper);}
+.divider .lede{color:#cbd5dd;}
+.divider .label{color:#e9a44b;}
+.cover{background:linear-gradient(160deg,var(--ink) 0%,#16263a 100%);color:var(--paper);}
+.cover h1{color:var(--paper);font-size:4.6rem;}
+.cover .lede{color:#cbd5dd;}
+.cover .label{color:#e9a44b;}
+.cover .stat .k{color:#cbd5dd;}
+.takeaway{display:grid;grid-template-columns:34px 1fr;gap:1rem;align-items:baseline;margin-bottom:.8rem;}
+.takeaway .tn{font-family:var(--mono);font-size:1.2rem;color:var(--accent);font-weight:600;}
+table.mini{border-collapse:collapse;width:100%;margin-top:.4rem;}
+table.mini td,table.mini th{text-align:left;padding:.32rem .5rem;border-bottom:1px solid #d6cdba;font-size:.9rem;}
+table.mini th{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2);}
+.formula{font-size:1.25rem;text-align:center;background:rgba(255,255,255,.5);border-left:3px solid var(--accent-2);
+  padding:.8rem 1rem;margin:.6rem 0;font-family:var(--mono);}
+</style></head><body><div class="deck"><section class="slide active cover"><div class="label">Module 03 · notebook 03_build_database</div><h1>Build your own<br>data pipeline.</h1><hr class="rule" style="background:var(--accent);width:200px;margin-top:1.4rem;"><p class="lede">Step by step and live: discover, download, clean, store in SQLite + Parquet, and turn it into a pollution study — for any coast.</p><div class="stat-row"><div class="stat"><span class="n">8</span><span class="k">free sources</span></div><div class="stat"><span class="n">3 %</span><span class="k">of a scene pulled</span></div><div class="stat"><span class="n">SQL</span><span class="k">+ Parquet store</span></div><div class="stat"><span class="n">21</span><span class="k">steps</span></div></div><div class="footer"><span>module 3 / 00</span><span>from zero to pro · 90 min</span></div></section><section class="slide divider"><div class="label">The whole pipeline</div><h1 style="font-size:3.2rem;margin-top:.5rem;">Six steps, like a kitchen.</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">Grocery run → wash → chop → fridge → cook → run the restaurant. Every section of the notebook maps to one step.</p><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 0 — the data landscape</div><h2><span class="pill concept">CONCEPT</span>Know the archive, know the login</h2><hr class="rule"><div class="two-col"><div><table class='mini'><tr><th>Source</th><th>Login?</th></tr><tr><td>NASA GIBS (true-colour)</td><td>none</td></tr><tr><td>Earth Search → AWS COG</td><td>none</td></tr><tr><td>Open-Meteo Air-Quality</td><td>none</td></tr><tr><td>Open-Meteo Marine</td><td>none</td></tr><tr><td>Copernicus CDSE / SH</td><td>free acct</td></tr></table></div><div><p class='lede'>Prototype today with the four no-login sources; graduate to a free Copernicus account when you need server-side processing or the full archive.</p><p style='margin-top:.6rem;'>The pattern never changes: <strong>discover → request a subset → get an array/table</strong>.</p></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide divider"><div class="label">Part 1 — discover &amp; download, live</div><h1 style="font-size:3.2rem;margin-top:.5rem;">Watch real data arrive.</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">Four downloads you run in the room, no credentials. Each degrades gracefully if you're offline.</p><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 1.1 — NASA GIBS</div><h2>A satellite snapshot for any date</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>One URL → a true-colour PNG of the lagoon, any day since 2000. This is how you <strong>browse</strong> for cloud-free dates before a heavy download.</p><pre class="code">url = (&#x27;https://gibs.earthdata.nasa.gov/wms/&#x27;
+  ...&#x27;&amp;LAYERS=MODIS_Terra_...TrueColor&#x27;
+  f&#x27;&amp;TIME={DATE}&#x27;)
+img = mpimg.imread(BytesIO(requests.get(url)...))</pre></div><div class="col"><div class="fig"><img src="figs/mod3_01.png" alt=""></div></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 1.2 — Sentinel-2 COG window</div><h2>10 m bands, only the AOI</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Search the public STAC, open the COG header <strong>without downloading</strong>, then read only the AOI window — ~8 MB, 3 % of the scene.</p><pre class="code"><span class="k">with</span> rasterio.open(b04_href) <span class="k">as</span> src:
+    win = from_bounds(*aoi_utm,
+        transform=src.transform)
+    red = src.read(1, window=win)
+<span class="c"># ~8 MB instead of ~240 MB</span></pre></div><div class="col"><div class="fig"><img src="figs/mod3_02.png" alt=""></div></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 1.3 — Open-Meteo Air-Quality</div><h2>Pollution data for the lagoon</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>A keyless API returns hourly <strong>PM2.5, PM10, ozone</strong> for any coordinate. Direct pollution context — one GET, one DataFrame.</p><pre class="code">url = (&#x27;https://air-quality-api.open-meteo.com&#x27;
+  f&#x27;/v1/air-quality?latitude={lat}&amp;longitude={lon}&#x27;
+  &#x27;&amp;hourly=pm10,pm2_5,ozone&amp;past_days=7&#x27;)
+aq = pd.DataFrame(requests.get(url).json()[&#x27;hourly&#x27;])</pre></div><div class="col"><div class="fig"><img src="figs/mod3_03.png" alt=""></div></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 1.4 — Open-Meteo Marine</div><h2>Live sea-surface temperature</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Same pattern, a different endpoint: hourly SST for any point — a free complement to the Sentinel-3 cube of Module 1.</p><pre class="code">url = (&#x27;https://marine-api.open-meteo.com/v1/&#x27;
+  f&#x27;marine?latitude={lat}&amp;longitude={lon}&#x27;
+  &#x27;&amp;hourly=sea_surface_temperature&amp;past_days=10&#x27;)
+sst = pd.DataFrame(requests.get(url).json()[&#x27;hourly&#x27;])</pre></div><div class="col"><div class="fig"><img src="figs/mod3_04.png" alt=""></div></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide divider"><div class="label">Part 1.5 — your free Copernicus account</div><h1 style="font-size:3.2rem;margin-top:.5rem;">Unlock server-side processing.</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">Register in class, paste your API key, and the server computes products for you — no raw-band downloads.</p><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 1.5 — register &amp; authenticate</div><h2><span class="pill edit">EDIT — paste your key</span>Three minutes, then paste your key</h2><hr class="rule"><div class="two-col"><div><h3>① Register</h3><p><code>dataspace.copernicus.eu</code> → Register → confirm email. Free, ~30k units/month.</p><h3 style='margin-top:.5rem;'>② OAuth client</h3><p>Sentinel Hub dashboard → User settings → OAuth clients → Create. Copy the ID + secret.</p><h3 style='margin-top:.5rem;'>③ Paste &amp; run</h3><p>The cell prompts you; the secret box is hidden.</p></div><div><pre class='code'><span class='c'># run -&gt; paste when prompted</span>
+CID  = input(<span class='s'>"Client ID: "</span>)
+CSEC = getpass.getpass(<span class='s'>"Secret: "</span>)
 
-<div class="deck" id="deck">
-
-<!-- Cover -->
-<section class="slide active cover">
-  <div class="mono-label">Module 03 · Notebook 03_build_database</div>
-  <h1>Build your own<br>data pipeline.</h1>
-  <hr class="rule" style="background: var(--accent); width: 200px; margin-top: 2rem;">
-  <p class="lede">From zero to a working database: discover, download live, clean,
-    store in SQLite + Parquet, and turn it into a pollution study — for the Mar
-    Menor, or for your own coast.</p>
-  <div class="stat-row">
-    <div class="stat"><span class="n">8</span><span class="k">free data sources</span></div>
-    <div class="stat"><span class="n">3%</span><span class="k">of a scene downloaded</span></div>
-    <div class="stat"><span class="n">SQL</span><span class="k">+ Parquet store</span></div>
-    <div class="stat"><span class="n">0</span><span class="k">images for a time series</span></div>
-  </div>
-  <svg class="lagoon-deco" viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
-    <path fill="currentColor" d="M100,15 C140,15 175,55 175,120 C175,175 145,235 100,235 C55,235 25,180 25,120 C25,55 60,15 100,15 Z M105,40 C75,40 50,65 45,110 C42,140 55,170 80,195 C95,210 110,205 125,195 C155,175 165,135 160,100 C155,65 135,40 105,40 Z"/>
-  </svg>
-  <div class="footer"><span>module 3 / 00</span><span>from zero to pro · 90 min</span></div>
-</section>
-
-<!-- The pipeline -->
-<section class="slide">
-  <div class="label">§ 01 — The shape of the whole module</div>
-  <h2>Six steps, one pipeline.</h2>
-  <hr class="rule">
-  <div class="pipe">
-    <div class="step"><div class="k">1 · grocery run</div><h3>Discover &amp; download</h3><p>Pull pixels &amp; readings from free archives.</p></div>
-    <span class="arrow">→</span>
-    <div class="step"><div class="k">2 · wash</div><h3>Clean &amp; QA</h3><p>Drop clouds, land, bad scenes.</p></div>
-    <span class="arrow">→</span>
-    <div class="step"><div class="k">3 · chop</div><h3>Extract</h3><p>Tidy long-format rows.</p></div>
-    <span class="arrow">→</span>
-    <div class="step"><div class="k">4 · fridge</div><h3>Store</h3><p>SQLite + Parquet.</p></div>
-    <span class="arrow">→</span>
-    <div class="step"><div class="k">5 · cook</div><h3>Analyse</h3><p>Pollution study in SQL.</p></div>
-  </div>
-  <p class="lede" style="margin-top:1.6rem;">The kitchen metaphor sticks: a project
-    is a grocery run, washing, chopping, a fridge, and cooking — then
-    <strong>Step 6</strong> is running the restaurant every day.</p>
-  <div class="footer"><span>module 3 / 01</span><span>pipeline overview</span></div>
-</section>
-
-<!-- Data landscape -->
-<section class="slide">
-  <div class="label">§ 02 — Where the free data is</div>
-  <h2>Know the archive, know the login.</h2>
-  <hr class="rule">
-  <table class="cmp">
-    <tr><th>Source</th><th>What you get</th><th>Login?</th><th>Best for</th></tr>
-    <tr><td><strong>NASA GIBS</strong></td><td>Daily true-colour, 2000→now</td><td class="tick">none</td><td>browsing any date</td></tr>
-    <tr><td><strong>Earth Search → AWS COG</strong></td><td>Sentinel-2 bands, 10 m</td><td class="tick">none</td><td>analysis-ready pixels</td></tr>
-    <tr><td><strong>Open-Meteo Air-Quality</strong></td><td>PM2.5, PM10, ozone</td><td class="tick">none</td><td>pollution context</td></tr>
-    <tr><td><strong>Open-Meteo Marine</strong></td><td>Sea-surface temperature</td><td class="tick">none</td><td>in-water conditions</td></tr>
-    <tr><td><strong>Copernicus CDSE / Sentinel Hub</strong></td><td>On-demand C2RCC, any product</td><td class="lock">free account</td><td>real-time processing</td></tr>
-    <tr><td><strong>Copernicus Marine · NASA Earthdata · EMODnet</strong></td><td>Ocean reanalysis, ocean colour, bathymetry</td><td class="lock">free / OGC</td><td>archives &amp; context</td></tr>
-  </table>
-  <p class="lede" style="margin-top:1.3rem;">Prototype today with the no-login four;
-    graduate to the account-based ones when the project demands it.</p>
-  <div class="footer"><span>module 3 / 02</span><span>data landscape</span></div>
-</section>
-
-<!-- Live downloads -->
-<section class="slide">
-  <div class="label">§ 03 — Downloads you run in the room</div>
-  <h2>Real data, on screen, no login.</h2>
-  <hr class="rule">
-  <div class="quad">
-    <div class="card"><h3>GIBS image</h3><p>One URL → a true-colour PNG of the lagoon for any date. Change the date, re-run, browse.</p></div>
-    <div class="card"><h3>Sentinel-2 COG window</h3><p>Search → open the COG header → read <strong>only the AOI window</strong>: ~8 MB instead of ~240 MB.</p></div>
-    <div class="card"><h3>Air-quality series</h3><p>GET → JSON → DataFrame: hourly PM2.5 / PM10 / ozone at the lagoon.</p></div>
-    <div class="card"><h3>Marine SST series</h3><p>Same pattern, live sea-surface temperature — a free complement to Sentinel-3.</p></div>
-  </div>
-  <p class="lede" style="margin-top:1.3rem;">The students <em>see the bytes arrive</em>
-    — that is the moment EO stops feeling abstract.</p>
-  <div class="footer"><span>module 3 / 03</span><span>live, no credentials</span></div>
-</section>
-
-<!-- Copernicus account -->
-<section class="slide">
-  <div class="label">§ 04 — What a free Copernicus account unlocks</div>
-  <h2>Server-side processing,<br>not just raw bands.</h2>
-  <hr class="rule">
-  <div class="two-col">
-    <pre class="code"><span class="c"># Send a recipe, get the product</span>
-EVALSCRIPT = <span class="s">"""//VERSION=3
-function setup(){return {
-  input:["B04","B05","dataMask"],
-  output:{bands:1}};}
+TOKEN = cdse_token(CID, CSEC)
+<span class='c'># every CDSE cell now runs live</span></pre></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 1.5 — Process API</div><h2>On-demand NDCI map, any date</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Send a tiny <strong>evalscript</strong> (what each pixel should be) plus a date; CDSE runs it server-side and returns a ready NDCI array. No band downloads.</p><pre class="code">EVALSCRIPT = &#x27;&#x27;&#x27;//VERSION=3
 function evaluatePixel(s){
-  return [(s.B05-s.B04)/
-          (s.B05+s.B04)];}"""</span>
+  <span class="k">return</span> [(s.B05-s.B04)/(s.B05+s.B04)];}&#x27;&#x27;&#x27;
+tif = process_ndci(TOKEN, BBOX, &#x27;2021-09-12&#x27;)</pre></div><div class="col"><div class="fig"><img src="figs/mod3_05.png" alt=""></div></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 1.5 — image + raw bands</div><h2>True-colour AND the numbers</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>The same API returns a real <strong>true-colour image</strong> and the <strong>raw per-band reflectance</strong> — read the chlorophyll signature straight off the spectrum.</p><pre class="code"><span class="c"># B02..B08 as FLOAT32, plus dataMask</span>
+<span class="k">with</span> rasterio.open(BytesIO(tif)) <span class="k">as</span> src:
+    a = src.read()          # (6, H, W)
+mean_reflectance = a[:5][:, mask].mean(1)</pre></div><div class="col"><div class="fig"><img src="figs/mod3_06.png" alt=""></div></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 1.5 — Statistical API</div><h2>A whole time series, zero images</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>The real game-changer: one request returns mean NDCI <strong>every 10 days</strong> over the AOI — downloading no imagery at all. This is how you run a monitoring dashboard cheaply.</p><pre class="code">js = stats_ndci(TOKEN, BBOX,
+    &#x27;2021-06-01&#x27;, &#x27;2021-10-31&#x27;, interval=&#x27;P10D&#x27;)
+ts = pd.DataFrame(parse(js))  # 15 dates, 0 downloads</pre></div><div class="col"><div class="fig"><img src="figs/mod3_08.png" alt=""></div></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide divider"><div class="label">Parts 2–4 — clean, extract, store</div><h1 style="font-size:3.2rem;margin-top:.5rem;">Turn pixels into a database.</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">Mask the bad pixels, reshape to tidy rows, and load them into SQLite — typed, indexed and idempotent.</p><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 2–3 — clean &amp; extract</div><h2><span class="pill run">RUN</span>Only trustworthy pixels, tidy shape</h2><hr class="rule"><div class="two-col"><div><p class='lede'>Raw pixels aren't observations. Keep only lagoon water, drop clouds, then reshape to long format: one row per (date, variable, zone, value).</p></div><div><pre class='code'>valid = WATER_MASK & (b04&gt;30) & (b04&lt;800)
+ndci  = (b05-b04)/(b05+b04)
 
-<span class="c"># Process API -> NDCI map, any date</span>
-<span class="c"># Statistical API -> full time</span>
-<span class="c"># series, ZERO downloads</span></pre>
-    <div>
-      <h3>The three unlocks</h3>
-      <ul class="tight">
-        <li><strong>Process API</strong> — send an evalscript, get the finished
-          product (NDCI, true-colour, or raw bands) for any date.</li>
-        <li><strong>Statistical API</strong> — a full AOI time series in one
-          request, downloading <em>no imagery at all</em>.</li>
-        <li><strong>Real numbers</strong> — pull the per-band reflectance and read
-          the chlorophyll signature straight off the spectrum.</li>
-      </ul>
-      <p style="margin-top:.8rem;">Register in ~2 min, store credentials as env
-        vars, and the same cells run live.</p>
-    </div>
-  </div>
-  <div class="footer"><span>module 3 / 04</span><span>CDSE process + statistical API</span></div>
-</section>
-
-<!-- Store -->
-<section class="slide">
-  <div class="label">§ 05 — Store it the right way</div>
-  <h2>SQLite for queries,<br>Parquet for bulk.</h2>
-  <hr class="rule">
-  <div class="two-col">
-    <div>
-      <p class="lede">CSVs become a swamp. A database gives types, primary keys
-        (no duplicates), indices, and SQL. We use a pragmatic hybrid.</p>
-      <ul class="tight" style="margin-top:1rem;">
-        <li><strong>SQLite</strong> (one file, zero install): <code>scenes</code>,
-          tidy <code>observations</code>, <code>stations</code>.</li>
-        <li><strong>Parquet</strong>: the millions of per-pixel values.</li>
-        <li><strong>Idempotent writes</strong> (<code>INSERT OR REPLACE</code> on a
-          <code>UNIQUE</code> key): re-running never duplicates.</li>
-      </ul>
-    </div>
-    <pre class="code"><span class="k">CREATE TABLE</span> observations (
-  obs_id   <span class="k">INTEGER PRIMARY KEY</span>,
-  date     <span class="k">TEXT</span>, source <span class="k">TEXT</span>,
-  variable <span class="k">TEXT</span>, zone   <span class="k">TEXT</span>,
-  value    <span class="k">REAL</span>, units  <span class="k">TEXT</span>,
-  <span class="k">UNIQUE</span>(date,source,variable,zone)
-);
-<span class="c">-- tidy, long format = easy SQL</span></pre>
-  </div>
-  <div class="footer"><span>module 3 / 05</span><span>schema · idempotent</span></div>
-</section>
-
-<!-- Analyse -->
-<section class="slide">
-  <div class="label">§ 06 — The payoff</div>
-  <h2>A pollution study, straight from SQL.</h2>
-  <hr class="rule">
-  <div class="two-col">
-    <div>
-      <h3>Questions that become one query each</h3>
-      <ul class="tight">
-        <li>Monthly-mean chl-a series</li>
-        <li>Robust long-term <strong>trend</strong> (Theil-Sen)</li>
-        <li><strong>"Poor status"</strong> exceedance days per year</li>
-        <li>North/Centre/South zone comparison</li>
-        <li>Satellite ↔ in-situ <strong>JOIN</strong> match-up</li>
-      </ul>
-    </div>
-    <div>
-      <div class="stat-row" style="margin-top:0;padding-top:0;flex-direction:column;gap:1.2rem;">
-        <div class="stat"><span class="n">20%</span><span class="k">2021 obs above threshold</span></div>
-        <div class="stat"><span class="n">8.2%</span><span class="k">2019 obs above threshold</span></div>
-      </div>
-      <p style="margin-top:1.2rem;">The database <em>detects the documented
-        crises by itself</em> — the proof that the pipeline works end to end.</p>
-    </div>
-  </div>
-  <div class="footer"><span>module 3 / 06</span><span>trend · exceedance · join</span></div>
-</section>
-
-<!-- Productionize + takeaways -->
-<section class="slide">
-  <div class="label">§ 07 — Scale &amp; takeaways</div>
-  <h2>Make it grow on its own.</h2>
-  <hr class="rule">
-  <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
-    <div class="takeaway"><span class="n">1</span><span><strong>Discover → subset → array/table</strong> is the same pattern for every source.</span></div>
-    <div class="takeaway"><span class="n">2</span><span><strong>Download only the window</strong> (COG) and summarise server-side (Statistical API) — move as few pixels as possible.</span></div>
-    <div class="takeaway"><span class="n">3</span><span><strong>Clean before you store; store tidy.</strong> Idempotent SQLite + Parquet scales to a scheduled, incremental job.</span></div>
-    <div class="takeaway"><span class="n">4</span><span><strong>The SQL transfers</strong> to PostGIS / DuckDB when you outgrow one file. Swap the AOI and the database builds itself.</span></div>
-  </div>
-  <div class="footer"><span>module 3 / 07</span><span>fin · module 3</span></div>
-</section>
-
-</div>
-
-<div class="nav">
-  <button id="prev">← prev</button>
-  <span class="counter" id="counter">1 / 8</span>
-  <button id="next">next →</button>
-</div>
-
-<script>
-  const slides = document.querySelectorAll(".slide");
-  let idx = 0;
-  const show = i => {
-    slides.forEach((s, k) => s.classList.toggle("active", k === i));
-    document.getElementById("counter").textContent = `${i+1} / ${slides.length}`;
-  };
-  document.getElementById("next").onclick = () => { idx = (idx+1) % slides.length; show(idx); };
-  document.getElementById("prev").onclick = () => { idx = (idx-1+slides.length) % slides.length; show(idx); };
-  document.addEventListener("keydown", e => {
-    if (e.key === "ArrowRight" || e.key === " ") { idx = (idx+1) % slides.length; show(idx); }
-    if (e.key === "ArrowLeft")                   { idx = (idx-1+slides.length) % slides.length; show(idx); }
-  });
-</script>
-</body>
-</html>
+rows.append({<span class='s'>'date'</span>:date,
+  <span class='s'>'variable'</span>:<span class='s'>'ndci'</span>, <span class='s'>'zone'</span>:zone,
+  <span class='s'>'value'</span>:np.ma.median(ndci[sel])})</pre></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 4 — the schema</div><h2><span class="pill run">RUN</span>SQLite for queries, Parquet for bulk</h2><hr class="rule"><div class="two-col"><div><p class='lede'>The <code>UNIQUE</code> constraint + <code>INSERT OR REPLACE</code> make every re-run <strong>idempotent</strong> — no duplicates, safe to schedule.</p><p>Millions of per-pixel values go to Parquet, referenced from the DB.</p></div><div><pre class='code'><span class='k'>CREATE TABLE</span> observations(
+  obs_id   INTEGER PRIMARY KEY,
+  date     TEXT, source TEXT,
+  variable TEXT, zone   TEXT,
+  value    REAL,
+  UNIQUE(date,source,variable,zone));</pre></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide divider"><div class="label">Part 5 — the pollution study</div><h1 style="font-size:3.2rem;margin-top:.5rem;">Answers, straight from SQL.</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">With everything in the database, monitoring questions become one query each.</p><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 5 — trend &amp; exceedance</div><h2>The study, generated from the DB</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Monthly-mean chl-a, a robust <strong>Theil-Sen trend</strong>, and the share of 'poor status' days per year. The exceedance counts spike in exactly 2019 and 2021.</p><pre class="code">monthly = pd.read_sql(&#x27;&#x27;&#x27;
+  SELECT substr(date,1,7) AS month,
+         AVG(value) AS chla
+  FROM observations WHERE variable=&#x27;chla_mg_m3&#x27;
+  GROUP BY month&#x27;&#x27;&#x27;, con)</pre></div><div class="col"><div class="fig"><img src="figs/mod3_09.png" alt=""></div></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide"><div class="label">§ 5 — the satellite ↔ in-situ join</div><h2>One query across two sources</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Load the in-situ series into a table and <strong>JOIN</strong> it to the satellite series by month — the match-up of a validation paper, in SQL. r = 0.99.</p><pre class="code">compare = pd.read_sql(&#x27;&#x27;&#x27;
+  SELECT m.month, m.chla_satellite, i.chla_mg_m3
+  FROM (...) m
+  JOIN insitu_monthly i ON m.month = i.month&#x27;&#x27;&#x27;, con)</pre></div><div class="col"><div class="fig"><img src="figs/mod3_10.png" alt=""></div></div></div><div class="footer"><span>module 3</span><span>from zero to pro</span></div></section><section class="slide divider"><div class="label">§ — what to walk away with</div><h1 style="font-size:2.6rem;">Module 3 in four lines.</h1><hr class="rule"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;"><div class="takeaway"><span class="tn">1</span><span><strong>Discover → subset → array/table</strong> is the same pattern for every source.</span></div><div class="takeaway"><span class="tn">2</span><span><strong>Move as few pixels as possible.</strong> COG windows + the server-side Statistical API.</span></div><div class="takeaway"><span class="tn">3</span><span><strong>Clean before you store; store tidy.</strong> Idempotent SQLite + Parquet scales to a scheduled job.</span></div><div class="takeaway"><span class="tn">4</span><span><strong>The SQL transfers</strong> to PostGIS / DuckDB. Swap the AOI and the database builds itself.</span></div></div><div class="footer"><span>module 3 / fin</span><span>from zero to pro</span></div></section></div><div class="nav"><button id="prev">&larr; prev</button><span class="counter" id="counter"></span><button id="next">next &rarr;</button></div><script>
+const slides=[...document.querySelectorAll('.slide')];let i=0;
+const show=n=>{i=(n+slides.length)%slides.length;
+ slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+ document.getElementById('counter').textContent=(i+1)+' / '+slides.length;
+ location.hash=i+1;};
+document.getElementById('next').onclick=()=>show(i+1);
+document.getElementById('prev').onclick=()=>show(i-1);
+document.addEventListener('keydown',e=>{
+ if(e.key==='ArrowRight'||e.key===' ')show(i+1);
+ if(e.key==='ArrowLeft')show(i-1);});
+const start=parseInt(location.hash.replace('#',''))||1;show(start-1);
+</script></body></html>

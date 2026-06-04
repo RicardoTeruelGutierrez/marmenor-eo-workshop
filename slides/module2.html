@@ -1,261 +1,106 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mar Menor EO Workshop — Module 2</title>
-<style>
-  :root {
-    --ink:#0e1a26; --paper:#f6f1e7; --paper-2:#eee5d4; --accent:#c2410c;
-    --accent-2:#115e59; --grey:#6b6157; --rule:#1e2e3a;
-    --serif:"Iowan Old Style","Source Serif Pro","Apple Garamond","Baskerville","Times New Roman",serif;
-    --mono:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--ink); }
-  body { font-family: var(--serif); color: var(--ink); min-height: 100vh;
-    display: flex; align-items: center; justify-content: center; }
-  .deck { width: min(95vw, 1280px); aspect-ratio: 16 / 9; background: var(--paper);
-    box-shadow: 0 30px 90px rgba(0,0,0,.5); position: relative; overflow: hidden; }
-  .slide { position: absolute; inset: 0; padding: 4.5rem 5.5rem; display: none;
-    flex-direction: column; background-image: radial-gradient(rgba(0,0,0,.03) 1px, transparent 1px);
-    background-size: 4px 4px; }
-  .slide.active { display: flex; }
-  .label { font-family: var(--mono); font-size: .72rem; letter-spacing: .25em;
-    text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; }
-  h1 { font-size: 4.4rem; font-weight: 500; line-height: 1; letter-spacing: -.025em; margin: 0 0 1rem; font-style: italic; }
-  h2 { font-size: 2.6rem; font-weight: 500; line-height: 1.1; letter-spacing: -.02em; margin: 0 0 1.5rem; }
-  h3 { font-size: 1.25rem; font-weight: 600; margin: 0 0 .5rem; }
-  p, li { font-size: 1.15rem; line-height: 1.55; color: #2a2520; }
-  .lede { font-size: 1.45rem; line-height: 1.4; color: #3a2e22; max-width: 60ch; }
-  hr.rule { border: 0; height: 1px; background: var(--rule); margin: .5rem 0 2rem; width: 100%; }
-  .footer { position: absolute; bottom: 1.4rem; left: 5.5rem; right: 5.5rem;
-    display: flex; justify-content: space-between; font-family: var(--mono); font-size: .7rem;
-    letter-spacing: .15em; text-transform: uppercase; color: var(--grey);
-    border-top: 1px solid #d6cdba; padding-top: .8rem; }
-  .nav { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); display: flex; gap: .35rem;
-    background: rgba(255,255,255,.08); padding: .35rem .6rem; border-radius: 999px; backdrop-filter: blur(8px); }
-  .nav button { background: none; border: 0; color: var(--paper-2); font-family: var(--mono);
-    font-size: .8rem; cursor: pointer; padding: .25rem .55rem; border-radius: 99px; }
-  .nav button:hover { background: rgba(255,255,255,.12); }
-  .counter { color: var(--paper-2); font-family: var(--mono); font-size: .75rem; padding: .25rem .55rem; }
-  .two-col { display: grid; grid-template-columns: 1.1fr .9fr; gap: 3rem; flex: 1; align-items: start; }
-  .quad { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; flex: 1; }
-  .quad .card { border-left: 3px solid var(--accent-2); padding: .9rem 1.1rem; background: rgba(255,255,255,.45); }
-  .quad .card h3 { color: var(--accent-2); font-size: 1.05rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: .12em; }
-  .quad .card p { font-size: .95rem; margin: 0; }
-  .stat-row { display: flex; gap: 3rem; margin-top: auto; padding-top: 2rem; }
-  .stat { display: flex; flex-direction: column; }
-  .stat .n { font-size: 3rem; font-weight: 500; line-height: 1; color: var(--accent); font-style: italic; }
-  .stat .k { font-family: var(--mono); font-size: .75rem; letter-spacing: .15em; text-transform: uppercase; color: var(--grey); margin-top: .5rem; }
-  pre.code { font-family: var(--mono); font-size: .85rem; background: var(--ink); color: #d4cdb9;
-    padding: 1.5rem; border-radius: 4px; white-space: pre; line-height: 1.5; overflow: hidden; }
-  pre.code .c { color: #7f7361; font-style: italic; }
-  pre.code .k { color: #e9a44b; }
-  pre.code .s { color: #b8c66e; }
-  ul.tight { padding-left: 1.2rem; }
-  ul.tight li { margin-bottom: .4rem; }
-  .cover { background: linear-gradient(160deg, var(--paper) 0%, var(--paper-2) 100%); }
-  .cover h1 { font-size: 5.2rem; max-width: 15ch; }
-  .cover .mono-label { font-family: var(--mono); font-size: .85rem; letter-spacing: .25em; text-transform: uppercase; color: var(--accent); margin-bottom: 2.5rem; }
-  .lagoon-deco { position: absolute; right: -180px; bottom: -120px; width: 720px; opacity: .07; pointer-events: none; }
-  code { font-family: var(--mono); font-size: .92em; background: rgba(0,0,0,.05); padding: .05em .3em; border-radius: 3px; }
-  .takeaway { display: grid; grid-template-columns: 40px 1fr; gap: 1.2rem; align-items: baseline; margin-bottom: 1.1rem; }
-  .takeaway .n { font-family: var(--mono); font-size: 1.4rem; color: var(--accent); font-weight: 600; }
-  table.cmp { width:100%; border-collapse: collapse; margin-top: .5rem; }
-  table.cmp th, table.cmp td { text-align: left; padding: .55rem .7rem; border-bottom: 1px solid #d6cdba; font-size: 1.02rem; }
-  table.cmp th { font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-2); }
-  table.cmp td.big { font-family: var(--mono); color: var(--accent); font-size: 1.2rem; }
-</style>
-</head>
-<body>
-
-<div class="deck" id="deck">
-
-<!-- Cover -->
-<section class="slide active cover">
-  <div class="mono-label">Module 02 · Notebook 02_insitu_timeseries_ml</div>
-  <h1>From buoys to<br>early warning.</h1>
-  <hr class="rule" style="background: var(--accent); width: 200px; margin-top: 2rem;">
-  <p class="lede">Integrating the in-situ monitoring network with the satellite
-    record, validating retrievals, and learning to <em>predict</em> and
-    <em>flag</em> the lagoon's crises with machine learning.</p>
-  <div class="stat-row">
-    <div class="stat"><span class="n">5</span><span class="k">buoy stations</span></div>
-    <div class="stat"><span class="n">18k</span><span class="k">daily records</span></div>
-    <div class="stat"><span class="n">2</span><span class="k">honest CV schemes</span></div>
-    <div class="stat"><span class="n">42 d</span><span class="k">best lead time</span></div>
-  </div>
-  <svg class="lagoon-deco" viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
-    <path fill="currentColor" d="M100,15 C140,15 175,55 175,120 C175,175 145,235 100,235 C55,235 25,180 25,120 C25,55 60,15 100,15 Z M105,40 C75,40 50,65 45,110 C42,140 55,170 80,195 C95,210 110,205 125,195 C155,175 165,135 160,100 C155,65 135,40 105,40 Z"/>
-  </svg>
-  <div class="footer"><span>module 2 / 00</span><span>in-situ + machine learning · 70 min</span></div>
-</section>
-
-<!-- In-situ networks -->
-<section class="slide">
-  <div class="label">§ 01 — Where the ground truth lives</div>
-  <h2>The regional monitoring networks.</h2>
-  <hr class="rule">
-  <div class="quad">
-    <div class="card"><h3>CARM Mar Menor</h3><p>Real-time sondes around the lagoon: T, S, chl-a, DO, turbidity. The dashboard regional authorities actually watch.</p></div>
-    <div class="card"><h3>IMIDA / SIAM</h3><p>Agro-meteorological stations: soil moisture, nitrate proxies — the upstream pressure.</p></div>
-    <div class="card"><h3>CHS-SAIH</h3><p>Segura watershed hydrology: precipitation and runoff at 15-min cadence.</p></div>
-    <div class="card"><h3>Copernicus Marine INS-TAC</h3><p>Aggregated in-situ ocean obs (buoys, CTDs, gliders) for the Mediterranean.</p></div>
-  </div>
-  <p class="lede" style="margin-top:1.4rem;">Our cached buoy dataset mimics the
-    structure of the CARM exports — five stations, daily, 2016–2025.</p>
-  <div class="footer"><span>module 2 / 01</span><span>in-situ networks</span></div>
-</section>
-
-<!-- Events in the buoys -->
-<section class="slide">
-  <div class="label">§ 02 — The crises in the raw signal</div>
-  <h2>What the agency saw in real time.</h2>
-  <hr class="rule">
-  <div class="two-col">
-    <div>
-      <h3>August 2021 — the hypoxia</h3>
-      <p>Dissolved oxygen at the worst stations crashes below the
-        <strong>2 mg/L</strong> hypoxia line while SST peaks. This is the plot
-        that accompanied the fish-kill headlines.</p>
-    </div>
-    <div>
-      <h3>September 2019 — the DANA</h3>
-      <p>A cut-off cold drop dumps 300+ mm in 48 h. The buoys show salinity
-        dropping ~4 PSU and nitrate spiking ten-fold as the watershed plume
-        enters the lagoon.</p>
-    </div>
-  </div>
-  <p class="lede" style="margin-top:1.2rem;">Before any modelling, we simply
-    <em>plot</em> the events — the data must show the story we claim to study.</p>
-  <div class="footer"><span>module 2 / 02</span><span>hypoxia · DANA</span></div>
-</section>
-
-<!-- Match-ups -->
-<section class="slide">
-  <div class="label">§ 03 — Validation</div>
-  <h2>Does the satellite agree<br>with the water?</h2>
-  <hr class="rule">
-  <div class="two-col">
-    <div>
-      <p class="lede">We co-locate each Sentinel-2 sampling point with its nearest
-        buoy (within 4 km, same day) and score the retrieval the way an
-        ocean-colour paper would.</p>
-    </div>
-    <div>
-      <h3>The metrics that matter</h3>
-      <ul class="tight">
-        <li><strong>R²</strong> — variance explained</li>
-        <li><strong>RMSE / RMSLE</strong> — error (log form, because chl-a is log-normal)</li>
-        <li><strong>Bias</strong> — systematic over/under-estimate</li>
-        <li>A <strong>1:1 line</strong> on the scatter — the honest visual test</li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer"><span>module 2 / 03</span><span>satellite ↔ in-situ match-ups</span></div>
-</section>
-
-<!-- ML + honest validation -->
-<section class="slide">
-  <div class="label">§ 04 — Machine learning, done honestly</div>
-  <h2>Two cross-validations,<br>two different questions.</h2>
-  <hr class="rule">
-  <table class="cmp">
-    <tr><th>Scheme</th><th>Question it answers</th><th>Result</th></tr>
-    <tr><td><code>TimeSeriesSplit</code></td><td>Can we predict <em>future dates</em>? (honours time order)</td><td class="big">high R²</td></tr>
-    <tr><td><code>GroupKFold</code> by station</td><td>Can we predict an <em>unseen station</em>? (spatial transfer)</td><td class="big">R² ≈ 0.17</td></tr>
-  </table>
-  <p class="lede" style="margin-top:1.6rem;">The gap is the lesson: a model that looks
-    great in time can be weak in space. <strong>Report the harder number.</strong>
-    A gradient-boosting regressor on reflectances + band ratios + season is the workhorse.</p>
-  <div class="footer"><span>module 2 / 04</span><span>gradient boosting · honest CV</span></div>
-</section>
-
-<!-- Anomaly detection -->
-<section class="slide">
-  <div class="label">§ 05 — Multivariate anomaly detection</div>
-  <h2>An early-warning detector that<br>never peeks at the future.</h2>
-  <hr class="rule">
-  <div class="two-col">
-    <pre class="code"><span class="c"># Fit ONLY on quiet years 2017-18</span>
-train = sm.query(<span class="s">"date &lt; '2019-01-01'"</span>)
-iso = IsolationForest(
-    n_estimators=300,
-    contamination=0.03,
-    random_state=42)
-iso.fit(train[FEATURES])
-
-<span class="c"># Apply out-of-sample (2019+)</span>
-sm[<span class="s">"anomaly"</span>] = iso.predict(
-    sm[FEATURES])</pre>
-    <div>
-      <h3>Why train on quiet years only</h3>
-      <p>If you fit on the whole series, the detector learns the crises as
-        "normal" and its early-warning value evaporates. Fitting on
-        <strong>2017–2018</strong> and applying to 2019+ makes every later flag
-        genuinely out-of-sample.</p>
-      <p style="margin-top:1rem;">It watches chl-a, turbidity, DO, SST, salinity
-        and nitrate <em>jointly</em> — joint anomalies catch precursors a single
-        threshold misses.</p>
-    </div>
-  </div>
-  <div class="footer"><span>module 2 / 05</span><span>isolation forest · out-of-sample</span></div>
-</section>
-
-<!-- Lead time vs detection delay -->
-<section class="slide">
-  <div class="label">§ 06 — The metric agencies actually want</div>
-  <h2>Lead time ≠ detection delay.</h2>
-  <hr class="rule">
-  <table class="cmp">
-    <tr><th>Crisis</th><th>First flag</th><th>Outcome</th></tr>
-    <tr><td>2019 DANA</td><td class="big">−42 d</td><td>genuine early warning</td></tr>
-    <tr><td>2021 anoxia</td><td class="big">+2 d</td><td>caught after onset (a miss)</td></tr>
-    <tr><td>2025 bloom</td><td class="big">+1 d</td><td>caught after onset (a miss)</td></tr>
-  </table>
-  <p class="lede" style="margin-top:1.5rem;">We separate a flag <em>before</em> the
-    start (<strong>lead time</strong> — the win) from a flag <em>after</em>
-    (<strong>detection delay</strong> — a miss). Lumping them together is how
-    monitoring papers quietly oversell themselves.</p>
-  <div class="footer"><span>module 2 / 06</span><span>lead time vs delay</span></div>
-</section>
-
-<!-- Takeaways -->
-<section class="slide">
-  <div class="label">§ 07 — What to walk away with</div>
-  <h2>Module 2 in four sentences.</h2>
-  <hr class="rule">
-  <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
-    <div class="takeaway"><span class="n">1</span><span><strong>Validate before you model.</strong> Match-ups with R²/RMSE/bias and a 1:1 line keep you honest.</span></div>
-    <div class="takeaway"><span class="n">2</span><span><strong>Time CV and space CV answer different questions.</strong> Report the unseen-station score, not just the easy one.</span></div>
-    <div class="takeaway"><span class="n">3</span><span><strong>Early-warning detectors must train on quiet years</strong> and be judged out-of-sample.</span></div>
-    <div class="takeaway"><span class="n">4</span><span><strong>Lead time and detection delay are opposites.</strong> Only a flag before onset is a real warning.</span></div>
-  </div>
-  <div class="footer"><span>module 2 / 07</span><span>fin · module 2</span></div>
-</section>
-
-</div>
-
-<div class="nav">
-  <button id="prev">← prev</button>
-  <span class="counter" id="counter">1 / 8</span>
-  <button id="next">next →</button>
-</div>
-
-<script>
-  const slides = document.querySelectorAll(".slide");
-  let idx = 0;
-  const show = i => {
-    slides.forEach((s, k) => s.classList.toggle("active", k === i));
-    document.getElementById("counter").textContent = `${i+1} / ${slides.length}`;
-  };
-  document.getElementById("next").onclick = () => { idx = (idx+1) % slides.length; show(idx); };
-  document.getElementById("prev").onclick = () => { idx = (idx-1+slides.length) % slides.length; show(idx); };
-  document.addEventListener("keydown", e => {
-    if (e.key === "ArrowRight" || e.key === " ") { idx = (idx+1) % slides.length; show(idx); }
-    if (e.key === "ArrowLeft")                   { idx = (idx-1+slides.length) % slides.length; show(idx); }
-  });
-</script>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mar Menor Workshop — Module 2</title><style>
+:root{
+  --ink:#0e1a26; --paper:#f6f1e7; --paper-2:#eee5d4; --accent:#c2410c;
+  --accent-2:#115e59; --grey:#6b6157; --rule:#1e2e3a;
+  --serif:"Iowan Old Style","Source Serif Pro","Apple Garamond","Baskerville","Times New Roman",serif;
+  --mono:"JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--ink);}
+body{font-family:var(--serif);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.deck{width:min(96vw,1320px);aspect-ratio:16/9;background:var(--paper);box-shadow:0 30px 90px rgba(0,0,0,.5);position:relative;overflow:hidden;}
+.slide{position:absolute;inset:0;padding:3.2rem 4rem;display:none;flex-direction:column;
+  background-image:radial-gradient(rgba(0,0,0,.03) 1px,transparent 1px);background-size:4px 4px;}
+.slide.active{display:flex;}
+.label{font-family:var(--mono);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:.7rem;}
+h1{font-size:3.8rem;font-weight:500;line-height:1.02;letter-spacing:-.025em;margin:0 0 1rem;font-style:italic;}
+h2{font-size:2.1rem;font-weight:500;line-height:1.08;letter-spacing:-.02em;margin:0 0 .5rem;}
+h3{font-size:1.05rem;font-weight:600;margin:0 0 .35rem;}
+p,li{font-size:1.02rem;line-height:1.5;color:#2a2520;}
+.lede{font-size:1.3rem;line-height:1.4;color:#3a2e22;max-width:60ch;}
+hr.rule{border:0;height:1px;background:var(--rule);margin:.3rem 0 1.1rem;width:100%;}
+.footer{position:absolute;bottom:1rem;left:4rem;right:4rem;display:flex;justify-content:space-between;
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--grey);
+  border-top:1px solid #d6cdba;padding-top:.55rem;}
+.nav{position:fixed;bottom:1.1rem;left:50%;transform:translateX(-50%);display:flex;gap:.3rem;
+  background:rgba(255,255,255,.08);padding:.3rem .55rem;border-radius:999px;backdrop-filter:blur(8px);z-index:10;}
+.nav button{background:none;border:0;color:var(--paper-2);font-family:var(--mono);font-size:.75rem;cursor:pointer;padding:.2rem .5rem;border-radius:99px;}
+.nav button:hover{background:rgba(255,255,255,.12);}
+.counter{color:var(--paper-2);font-family:var(--mono);font-size:.7rem;padding:.2rem .5rem;}
+code{font-family:var(--mono);font-size:.92em;background:rgba(0,0,0,.05);padding:.05em .3em;border-radius:3px;}
+pre.code{font-family:var(--mono);font-size:.82rem;background:var(--ink);color:#d4cdb9;
+  padding:1.1rem 1.3rem;border-radius:5px;white-space:pre;line-height:1.45;overflow:hidden;margin:0;}
+pre.code .c{color:#7f7361;font-style:italic;}
+pre.code .k{color:#e9a44b;}
+pre.code .s{color:#b8c66e;}
+pre.code .n{color:#86b8c9;}
+ul.tight{padding-left:1.1rem;margin:.3rem 0;}
+ul.tight li{margin-bottom:.3rem;}
+.fig{background:#0d1b2a;border-radius:5px;padding:.5rem;display:flex;align-items:center;justify-content:center;}
+.fig img{max-width:100%;max-height:100%;object-fit:contain;border-radius:3px;}
+/* step layout: code left, figure right */
+.step{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;flex:1;min-height:0;align-items:stretch;}
+.step .col{display:flex;flex-direction:column;min-height:0;}
+.step .col.explain p{margin:.2rem 0 .7rem;}
+.step .fig{flex:1;min-height:0;}
+/* figure-dominant layout */
+.figbig{display:grid;grid-template-columns:1fr;gap:.8rem;flex:1;min-height:0;}
+.figbig .fig{flex:1;min-height:0;}
+.figbig .cap{display:flex;gap:1.4rem;}
+.figbig .cap>div{flex:1;}
+/* two-text columns */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2.2rem;flex:1;align-items:start;}
+.pill{display:inline-block;font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:.15rem .5rem;border-radius:99px;margin-bottom:.6rem;}
+.pill.run{background:#dcefe6;color:var(--accent-2);}
+.pill.edit{background:#fbe6d8;color:var(--accent);}
+.pill.concept{background:#e7e2f3;color:#5b4a8a;}
+.stat-row{display:flex;gap:2.4rem;margin-top:auto;padding-top:1.2rem;}
+.stat{display:flex;flex-direction:column;}
+.stat .n{font-size:2.6rem;font-weight:500;line-height:1;color:var(--accent);font-style:italic;}
+.stat .k{font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--grey);margin-top:.4rem;}
+.divider{background:linear-gradient(160deg,var(--ink) 0%,#16263a 100%);color:var(--paper);}
+.divider h1{color:var(--paper);}
+.divider .lede{color:#cbd5dd;}
+.divider .label{color:#e9a44b;}
+.cover{background:linear-gradient(160deg,var(--ink) 0%,#16263a 100%);color:var(--paper);}
+.cover h1{color:var(--paper);font-size:4.6rem;}
+.cover .lede{color:#cbd5dd;}
+.cover .label{color:#e9a44b;}
+.cover .stat .k{color:#cbd5dd;}
+.takeaway{display:grid;grid-template-columns:34px 1fr;gap:1rem;align-items:baseline;margin-bottom:.8rem;}
+.takeaway .tn{font-family:var(--mono);font-size:1.2rem;color:var(--accent);font-weight:600;}
+table.mini{border-collapse:collapse;width:100%;margin-top:.4rem;}
+table.mini td,table.mini th{text-align:left;padding:.32rem .5rem;border-bottom:1px solid #d6cdba;font-size:.9rem;}
+table.mini th{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2);}
+.formula{font-size:1.25rem;text-align:center;background:rgba(255,255,255,.5);border-left:3px solid var(--accent-2);
+  padding:.8rem 1rem;margin:.6rem 0;font-family:var(--mono);}
+</style></head><body><div class="deck"><section class="slide active cover"><div class="label">Module 02 · notebook 02_insitu_timeseries_ml</div><h1>From buoys to<br>early warning.</h1><hr class="rule" style="background:var(--accent);width:200px;margin-top:1.4rem;"><p class="lede">Step by step: validate the satellite against the buoy network, then learn to predict and flag the lagoon's crises — with honest statistics.</p><div class="stat-row"><div class="stat"><span class="n">5</span><span class="k">buoy stations</span></div><div class="stat"><span class="n">18k</span><span class="k">daily records</span></div><div class="stat"><span class="n">2</span><span class="k">honest CV schemes</span></div><div class="stat"><span class="n">42 d</span><span class="k">best lead time</span></div></div><div class="footer"><span>module 2 / 00</span><span>in-situ + machine learning · 70 min</span></div></section><section class="slide divider"><div class="label">Part 1 — the ground truth</div><h1 style="font-size:3.2rem;margin-top:.5rem;">What the agency saw in real time.</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">Daily buoy data (CARM/IMIDA) and watershed hydrology (CHS-SAIH) — the truth the satellite must agree with.</p><div class="footer"><span>module 2</span><span>in-situ + machine learning</span></div></section><section class="slide"><div class="label">§ 1 — the in-situ networks</div><h2><span class="pill concept">CONCEPT</span>Where the data lives</h2><hr class="rule"><div class="two-col"><div><table class='mini'><tr><th>Source</th><th>What</th></tr><tr><td><strong>CARM Mar Menor</strong></td><td>T, S, chl-a, DO, turbidity sondes</td></tr><tr><td><strong>IMIDA / SIAM</strong></td><td>agro-meteorology, nitrate proxies</td></tr><tr><td><strong>CHS-SAIH</strong></td><td>watershed rain &amp; runoff</td></tr><tr><td><strong>CMEMS INS-TAC</strong></td><td>aggregated Med in-situ obs</td></tr></table></div><div><p class='lede'>Our cached file mimics CARM exports: five stations, daily, 2016–2025, six variables.</p><p style='margin-top:.6rem;'>The upstream agricultural data is what ultimately drives the lagoon — keep that causal chain in view.</p></div></div><div class="footer"><span>module 2</span><span>in-situ + machine learning</span></div></section><section class="slide"><div class="label">§ 1 — step 1 · the 2021 hypoxia</div><h2>Dissolved oxygen crashes below 2 mg/L</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Plot DO at the worst stations against the <strong>2 mg/L hypoxia line</strong>, SST overlaid. This is the chart behind the fish-kill headlines.</p><pre class="code">focus = insitu.query(
+  &quot;station_id <span class="k">in</span> [&#x27;MM01&#x27;,&#x27;MM02&#x27;,&#x27;MM05&#x27;] <span class="k">and</span> &quot;
+  &quot;&#x27;2021-07-01&#x27; &lt;= date &lt;= &#x27;2021-10-15&#x27;&quot;)
+ax.axhline(2.0, color=&#x27;red&#x27;, ls=&#x27;:&#x27;)  # hypoxia</pre></div><div class="col"><div class="fig"><img src="figs/mod2_01.png" alt=""></div></div></div><div class="footer"><span>module 2</span><span>in-situ + machine learning</span></div></section><section class="slide"><div class="label">§ 1 — step 2 · the 2019 DANA</div><h2>Rain → nitrate → salinity, a cascade</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>A cut-off cold drop dumped 300+ mm in 48 h. The buoys show salinity dropping ~4 PSU as nitrate spikes ten-fold — the watershed plume entering the lagoon.</p><pre class="code">dana = insitu.query(&quot;&#x27;2019-08-15&#x27;&lt;=date&lt;=&#x27;2019-11-30&#x27;&quot;)
+ws   = pd.read_csv(DATA/&#x27;watershed_forcing.csv&#x27;)
+<span class="c"># precip (top) | nitrate (mid) | salinity (bottom)</span></pre></div><div class="col"><div class="fig"><img src="figs/mod2_02.png" alt=""></div></div></div><div class="footer"><span>module 2</span><span>in-situ + machine learning</span></div></section><section class="slide divider"><div class="label">Part 2 — validation</div><h1 style="font-size:3.2rem;margin-top:.5rem;">Does the satellite agree with the water?</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">Co-locate each satellite point with its nearest buoy and score the retrieval the way an ocean-colour paper would.</p><div class="footer"><span>module 2</span><span>in-situ + machine learning</span></div></section><section class="slide"><div class="label">§ 2 — match-ups</div><h2>Satellite vs in-situ chlorophyll</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Pair each S2 point with its nearest buoy (within 4 km, same day). Report R², RMSE and RMSLE (log form — chl-a is log-normal), and always draw the <strong>1:1 line</strong>.</p><pre class="code">m = matchup.dropna()
+rmse  = mean_squared_error(x, y) ** 0.5
+rmsle = mean_squared_error(
+    np.log1p(x), np.log1p(y)) ** 0.5
+r2    = r2_score(x, y)</pre></div><div class="col"><div class="fig"><img src="figs/mod2_03.png" alt=""></div></div></div><div class="footer"><span>module 2</span><span>in-situ + machine learning</span></div></section><section class="slide divider"><div class="label">Part 3 — machine learning, honestly</div><h1 style="font-size:3.2rem;margin-top:.5rem;">Two cross-validations, two questions.</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">A gradient-boosting regressor predicts chl-a from reflectances — but how we validate it decides whether the result is trustworthy.</p><div class="footer"><span>module 2</span><span>in-situ + machine learning</span></div></section><section class="slide"><div class="label">§ 3 — honest cross-validation</div><h2><span class="pill concept">CONCEPT</span>Time CV looks easy; space CV is the truth</h2><hr class="rule"><div class="two-col"><div><table class='mini'><tr><th>Scheme</th><th>Question</th><th>R²</th></tr><tr><td>TimeSeriesSplit</td><td>predict future dates?</td><td>high</td></tr><tr><td>GroupKFold by station</td><td>predict an unseen station?</td><td>≈ 0.17</td></tr></table><p style='margin-top:.7rem;'>The gap is the lesson.</p></div><div><p class='lede'>A model can look great in time yet be weak in space. When you talk about deploying somewhere new, <strong>report the unseen-station number</strong>, not the easy one.</p></div></div><div class="footer"><span>module 2</span><span>in-situ + machine learning</span></div></section><section class="slide"><div class="label">§ 3 — feature importance</div><h2>What the model leans on</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Refit on all data and inspect the gradient-boosting importances. Red-edge bands and the band ratios dominate — the physics and the model agree.</p><pre class="code">model = GradientBoostingRegressor(
+    n_estimators=600, max_depth=4,
+    learning_rate=0.05)
+model.fit(X, y)
+imp = pd.Series(model.feature_importances_, FEATS)</pre></div><div class="col"><div class="fig"><img src="figs/mod2_04.png" alt=""></div></div></div><div class="footer"><span>module 2</span><span>in-situ + machine learning</span></div></section><section class="slide divider"><div class="label">Part 4 — anomaly detection</div><h1 style="font-size:3.2rem;margin-top:.5rem;">An early warning that never peeks.</h1><hr class="rule" style="background:var(--accent);width:160px;"><p class="lede">Multivariate anomalies across six variables — trained only on the quiet years, judged out-of-sample.</p><div class="footer"><span>module 2</span><span>in-situ + machine learning</span></div></section><section class="slide"><div class="label">§ 4 — Isolation Forest</div><h2>Trained on quiet years, applied forward</h2><hr class="rule"><div class="step"><div class="col explain"><span class="pill run">RUN</span><p>Fit on the calm <strong>2017–2018</strong> baseline only, then apply to 2019+. Every later flag is genuinely out-of-sample — otherwise the detector just learns the crises as normal.</p><pre class="code">train = sm.query(&quot;date &lt; &#x27;2019-01-01&#x27;&quot;)
+iso = IsolationForest(n_estimators=300,
+    contamination=0.03).fit(train[FEATURES])
+sm[&#x27;anomaly&#x27;] = iso.predict(sm[FEATURES])</pre></div><div class="col"><div class="fig"><img src="figs/mod2_05.png" alt=""></div></div></div><div class="footer"><span>module 2</span><span>in-situ + machine learning</span></div></section><section class="slide"><div class="label">§ 4 — lead time vs detection delay</div><h2><span class="pill concept">CONCEPT</span>Two opposite outcomes, never merged</h2><hr class="rule"><div class="two-col"><div><table class='mini'><tr><th>Crisis</th><th>First flag</th><th>Outcome</th></tr><tr><td>2019 DANA</td><td>−42 days</td><td>early warning</td></tr><tr><td>2021 anoxia</td><td>+2 days</td><td>late (a miss)</td></tr><tr><td>2025 bloom</td><td>+1 day</td><td>late (a miss)</td></tr></table></div><div><p class='lede'>A flag <strong>before</strong> the start is lead time — a win. A flag <strong>after</strong> is detection delay — a miss. Lumping them together is how monitoring papers oversell themselves.</p></div></div><div class="footer"><span>module 2</span><span>in-situ + machine learning</span></div></section><section class="slide divider"><div class="label">§ — what to walk away with</div><h1 style="font-size:2.6rem;">Module 2 in four lines.</h1><hr class="rule"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;"><div class="takeaway"><span class="tn">1</span><span><strong>Validate before you model.</strong> Match-ups with R²/RMSE/bias and a 1:1 line.</span></div><div class="takeaway"><span class="tn">2</span><span><strong>Time CV ≠ space CV.</strong> Report the unseen-station score, not just the easy one.</span></div><div class="takeaway"><span class="tn">3</span><span><strong>Early warning trains on quiet years</strong> and must be judged out-of-sample.</span></div><div class="takeaway"><span class="tn">4</span><span><strong>Lead time and detection delay are opposites.</strong> Only a flag before onset is a real warning.</span></div></div><div class="footer"><span>module 2 / fin</span><span>in-situ + machine learning</span></div></section></div><div class="nav"><button id="prev">&larr; prev</button><span class="counter" id="counter"></span><button id="next">next &rarr;</button></div><script>
+const slides=[...document.querySelectorAll('.slide')];let i=0;
+const show=n=>{i=(n+slides.length)%slides.length;
+ slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+ document.getElementById('counter').textContent=(i+1)+' / '+slides.length;
+ location.hash=i+1;};
+document.getElementById('next').onclick=()=>show(i+1);
+document.getElementById('prev').onclick=()=>show(i-1);
+document.addEventListener('keydown',e=>{
+ if(e.key==='ArrowRight'||e.key===' ')show(i+1);
+ if(e.key==='ArrowLeft')show(i-1);});
+const start=parseInt(location.hash.replace('#',''))||1;show(start-1);
+</script></body></html>
