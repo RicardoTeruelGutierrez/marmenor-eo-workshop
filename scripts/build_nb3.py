@@ -82,13 +82,26 @@ already in `requirements.txt`.
 # COLAB BOOTSTRAP — same notebook runs locally or in Google Colab
 # ---------------------------------------------------------------------------
 nb.md(r"""---
-## Run anywhere — Colab or your laptop
+## ▶️ How to run this notebook
 
-Click to open this notebook in **Google Colab** and run it in your browser, no install required:
+Open the **Table of contents** (☰, top-left) to jump between the six parts.
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RicardoTeruelGutierrez/marmenor-eo-workshop/blob/main/notebooks/03_build_database.ipynb)
 
-The next cell self-bootstraps. In Colab it clones the repo, installs dependencies and generates the synthetic datasets (~30 s, one time). On a local install it's a no-op.
+1. **In Colab:** click the badge, then **Runtime → Run all**. First cell installs everything (~30 s).
+2. **On your laptop:** `pip install -r requirements.txt`, then run top to bottom.
+3. **Run cells in order** — each builds on the previous.
+4. **What you need:** most cells need no account. Part 1.5 (Copernicus) is where you register and paste your own API key, live.
+
+**Cell labels you'll see:**
+
+| Label | Meaning |
+|-------|---------|
+| 🟢 **RUN** | Just run it — fetches real data or builds a result. |
+| ✏️ **EDIT** | Change a value (a date, your credentials) before running. |
+| ⏭️ **OPTIONAL** | Pattern/reference — safe to skip; won't break later cells. |
+
+*Run the bootstrap cell below first (it does nothing on a local install).*
 """)
 
 nb.code(r'''# Colab bootstrap (no-op on a local install)
@@ -170,8 +183,7 @@ print(f"  Lagoon outline    : {'loaded' if LAGOON_POLY is not None else 'missing
 # PART 1 — DISCOVER & DOWNLOAD
 # ===========================================================================
 nb.md(r"""---
-# Part 1 — Discover & download: a tour of free data you can pull *right now*
-
+## Part 1 — Discover & download: a tour of free data you can pull *right now*
 Before writing a pipeline you need to know **what is out there**. Earth-observation
 data lives in many archives; the trick is knowing which one to use and whether it
 needs a login. Here is the practical map.
@@ -195,8 +207,7 @@ historical archive. We now download from each of the four open sources, **live**
 """)
 
 # --- 1.1 NASA GIBS ---------------------------------------------------------
-nb.md(r"""## 1.1 LIVE — a satellite snapshot for *any* date (NASA GIBS)
-
+nb.md(r"""### 1.1 LIVE — a satellite snapshot for *any* date (NASA GIBS)
 The simplest possible download: ask NASA's **GIBS** WMS server for a true-colour
 image of our bounding box on a chosen date, and display it. No login, one HTTP
 request. This is how you *browse* — pick good cloud-free days before committing to
@@ -204,6 +215,8 @@ a heavy high-resolution download.
 
 We literally build a URL with our bounding box and a date, GET it, and the server
 returns a PNG. Change `DATE` and re-run to see any day since 2000.
+
+> ✏️ **EDIT** — change `DATE` in the cell below, then run it.
 """)
 
 nb.code(r'''def gibs_truecolor(bbox, date, layer="MODIS_Terra_CorrectedReflectance_TrueColor",
@@ -237,8 +250,7 @@ else:
 ''')
 
 # --- 1.2 Earth Search + COG ------------------------------------------------
-nb.md(r"""## 1.2 LIVE — high-resolution Sentinel-2 from the cloud (STAC + COG)
-
+nb.md(r"""### 1.2 LIVE — high-resolution Sentinel-2 from the cloud (STAC + COG)
 GIBS is quick but coarse (250 m). For analysis we want **Sentinel-2 at 10 m**.
 We will do this the modern, scalable way and **watch each step**:
 
@@ -323,8 +335,7 @@ else:
 ''')
 
 # --- 1.3 Open-Meteo Air Quality -------------------------------------------
-nb.md(r"""## 1.3 LIVE — pollution data for the lagoon (Open-Meteo Air-Quality)
-
+nb.md(r"""### 1.3 LIVE — pollution data for the lagoon (Open-Meteo Air-Quality)
 Satellites are not the only free data. The **Open-Meteo Air-Quality API** returns
 hourly **PM2.5, PM10, ozone** for any coordinate — no key. This is direct
 *pollution* context: dust and aerosols over the Campo de Cartagena tie into the
@@ -359,8 +370,7 @@ else:
 ''')
 
 # --- 1.4 Open-Meteo Marine -------------------------------------------------
-nb.md(r"""## 1.4 LIVE — sea-surface temperature time series (Open-Meteo Marine)
-
+nb.md(r"""### 1.4 LIVE — sea-surface temperature time series (Open-Meteo Marine)
 The **Open-Meteo Marine API** gives hourly **sea-surface temperature** for a
 coordinate — a free, instant complement to the Sentinel-3 SST cube of Module 1.
 Same pattern: GET → JSON → DataFrame → plot.
@@ -393,8 +403,7 @@ else:
 ''')
 
 # --- 1.5 Account-based heavyweights ----------------------------------------
-nb.md(r"""## 1.5 Level up: get a *free* Copernicus account — do it now, live
-
+nb.md(r"""### 1.5 Level up: get a *free* Copernicus account — do it now, live
 The open sources are great for prototyping. A **free Copernicus Data Space
 Ecosystem (CDSE) account** unlocks what the AWS mirror cannot: **server-side,
 on-demand processing**. You send a small script and CDSE returns *exactly the
@@ -422,6 +431,8 @@ an access token — and every CDSE cell after it runs live, on your own account.
 > 🔒 Your secret is read into memory only, never written into the notebook. If
 > you skip this (just press Enter), the rest of the section still shows the code
 > patterns without running.
+
+> ✏️ **EDIT** — run the cell below and paste your Client ID + secret when prompted.
 """)
 
 nb.code(r'''import os, getpass
@@ -682,7 +693,9 @@ else:
     print("          This is how you build a monitoring dashboard cheaply.")
 ''')
 
-nb.md(r"""## 1.6 Other free-account sources (reference)
+nb.md(r"""### 1.6 Other free-account sources (reference)
+
+> ⏭️ **OPTIONAL** — reference snippets for later; nothing to run here.
 
 Three more archives worth a free account when your project needs them:
 
@@ -718,8 +731,7 @@ earthaccess.download(g, "./modis_chl")
 # PART 2 — CLEAN & QA
 # ===========================================================================
 nb.md(r"""---
-# Part 2 — Clean & QA: which pixels can you trust?
-
+## Part 2 — Clean & QA: which pixels can you trust?
 Raw pixels are **not** observations. A scene can be cloudy, or only clip the edge
 of a satellite pass. Before storing anything we (1) keep only **water** pixels,
 (2) drop **clouds**, and (3) score each scene's **coverage and cloud fraction over
@@ -774,8 +786,7 @@ else:
 # PART 3 — EXTRACT
 # ===========================================================================
 nb.md(r"""---
-# Part 3 — Extract: turn clean pixels into tidy numbers
-
+## Part 3 — Extract: turn clean pixels into tidy numbers
 A database wants **tidy, long-format** rows: one row per *(date, variable, zone,
 value)*. That shape makes everything downstream — filtering, grouping, joining —
 a one-liner. We compute the **NDCI** chlorophyll index per scene and summarise it
@@ -842,8 +853,7 @@ print(observations["source"].value_counts().to_string())
 # PART 4 — STORE
 # ===========================================================================
 nb.md(r"""---
-# Part 4 — Store it the right way (SQLite + Parquet)
-
+## Part 4 — Store it the right way (SQLite + Parquet)
 ### Why a database and not a pile of CSVs?
 
 Once you have more than a handful of files, CSVs become a swamp: no types, no
@@ -855,7 +865,6 @@ We use the **SQLite + Parquet hybrid**:
 - **Parquet**: the bulky per-pixel arrays — everything you *bulk-read*.
 
 ### 4.1 Design the schema
-
 Three tables, each with a primary key and indices on what we filter by. The
 `UNIQUE(date, source, variable, zone)` constraint is the magic that makes re-runs
 **idempotent**: `INSERT OR REPLACE` updates a row instead of duplicating it.
@@ -886,7 +895,6 @@ print(pd.read_sql("SELECT name FROM sqlite_master WHERE type='table'", con).to_s
 ''')
 
 nb.md(r"""### 4.2 Load the tables (idempotent inserts)
-
 `INSERT OR REPLACE` means you can re-run this cell a hundred times and the row
 count never grows — exactly what a scheduled, incremental pipeline needs.
 """)
@@ -917,7 +925,6 @@ for t in ["scenes", "observations", "stations"]:
 ''')
 
 nb.md(r"""### 4.3 Bulk arrays → Parquet (keep them out of the database)
-
 Storing millions of pixels as SQL rows is the wrong tool. We save the per-pixel
 NDCI field as compressed **Parquet** and keep only a *reference* in the database.
 """)
@@ -940,8 +947,7 @@ else:
 # PART 5 — ANALYSE
 # ===========================================================================
 nb.md(r"""---
-# Part 5 — Analyse: a pollution study, straight from SQL
-
+## Part 5 — Analyse: a pollution study, straight from SQL
 Everything is in the database now, so monitoring questions become short SQL
 queries. We will (a) pull a monthly chl-a series, (b) fit a robust trend, (c)
 count "poor status" exceedances, and (d) join satellite with in-situ — the kind
@@ -1031,8 +1037,7 @@ fig.tight_layout(); plt.show()
 # PART 6 — PRODUCTIONISE
 # ===========================================================================
 nb.md(r"""---
-# Part 6 — Make it grow on its own
-
+## Part 6 — Make it grow on its own
 The whole point of a database is that it **keeps growing**. Wrap Parts 1–4 in one
 function and run it on a schedule; because every write is `INSERT OR REPLACE` on a
 `UNIQUE` key, re-processing a date just updates it — safe to re-run forever.

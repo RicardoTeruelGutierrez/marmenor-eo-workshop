@@ -43,15 +43,21 @@ By the end of this module you will be able to:
 
 The cached buoy dataset for this module mimics the structure of the CARM portal exports.""")
 
-# ── Colab bootstrap (same notebook runs locally or in Colab) ──────────
+# ── How to run + Colab bootstrap ──────────────────────────────────────
 nb.md(r"""---
-## Run anywhere — Colab or your laptop
+## ▶️ How to run this notebook
 
-Click to open this notebook in **Google Colab** and run it in your browser, no install required:
+Open the **Table of contents** (☰, top-left) to jump between sections.
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RicardoTeruelGutierrez/marmenor-eo-workshop/blob/main/notebooks/02_insitu_timeseries_ml.ipynb)
 
-The next cell self-bootstraps. In Colab it clones the repo, installs dependencies and generates the synthetic datasets (~30 s, one time). On a local install it's a no-op.
+1. **In Colab:** click the badge, then **Runtime → Run all**. First cell installs everything (~30 s).
+2. **On your laptop:** `pip install -r requirements.txt`, then run top to bottom.
+3. **Run cells in order** — each builds on the previous. No account needed: this module is fully offline.
+
+**Cell labels:** 🟢 **RUN** = just run it · ✏️ **EDIT** = change a value first · ⏭️ **OPTIONAL** = safe to skip.
+
+*Run the bootstrap cell below first (it does nothing on a local install).*
 """)
 
 nb.code(r'''# Colab bootstrap (no-op on a local install)
